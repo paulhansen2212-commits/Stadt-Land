@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Stadt Land Vollpfosten 🎲</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --card: #0f3460;
+    --accent1: #e94560;
+    --accent2: #f5a623;
+    --accent3: #00d4aa;
+    --accent4: #a855f7;
+    --text: #f0f0f0;
+    --text-muted: #9ca3af;
+    --radius: 16px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(233,69,96,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(0,212,170,0.06) 0%, transparent 70%);
+  }
+
+  header {
+    text-align: center;
+    padding: 36px 20px 20px;
+  }
+
+  header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+
+  header p {
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin: 24px 0 20px;
+    background: var(--surface);
+    border-radius: 50px;
+    padding: 6px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 6px;
+    border: none;
+    border-radius: 44px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .tab.active {
+    background: linear-gradient(135deg, var(--accent1), var(--accent4));
+    color: white;
+    box-shadow: 0 4px 16px rgba(233,69,96,0.4);
+  }
+
+  /* ── Sections Filter ── */
+  .section-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .section-btn {
+    padding: 7px 14px;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .section-btn.active {
+    border-color: var(--accent3);
+    color: var(--accent3);
+    background: rgba(0,212,170,0.1);
+  }
+
+  /* ── Category Grid ── */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .cat-chip {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid rgba(255,255,255,0.08);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    line-height: 1.3;
+    position: relative;
+  }
+
+  .cat-chip:hover {
+    border-color: rgba(255,255,255,0.2);
+    transform: translateY(-1px);
+  }
+
+  .cat-chip.selected {
+    border-color: var(--accent3);
+    background: rgba(0,212,170,0.15);
+    color: var(--accent3);
+  }
+
+  .cat-chip.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.75rem;
+    color: var(--accent3);
+  }
+
+  /* ── Action Buttons ── */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 130px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-random {
+    background: linear-gradient(135deg, var(--accent1), var(--accent4));
+    color: white;
+    box-shadow: 0 4px 20px rgba(233,69,96,0.35);
+  }
+
+  .btn-random:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(233,69,96,0.5); }
+  .btn-random:active { transform: scale(0.97); }
+
+  .btn-clear {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+
+  .btn-clear:hover { border-color: var(--accent1); color: var(--accent1); }
+
+  .btn-selectall {
+    background: var(--surface);
+    color: var(--accent2);
+    border: 2px solid rgba(245,166,35,0.3);
+  }
+
+  .btn-selectall:hover { background: rgba(245,166,35,0.1); }
+
+  /* ── Result Area ── */
+  .result-area {
+    display: none;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .result-area.visible { display: block; }
+
+  .result-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .result-bubble {
+    background: linear-gradient(135deg, var(--card), #1a4080);
+    border: 2px solid rgba(0,212,170,0.3);
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: var(--shadow), 0 0 40px rgba(0,212,170,0.1);
+    animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-bubble::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at center, rgba(0,212,170,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.85) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .result-category {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.6rem, 6vw, 2.8rem);
+    color: var(--accent3);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .result-source {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 18px;
+  }
+
+  .btn-again {
+    background: linear-gradient(135deg, var(--accent3), #00a080);
+    color: #0f3460;
+    font-weight: 800;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-again:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,212,170,0.4); }
+
+  .btn-copy {
+    background: var(--surface);
+    color: var(--text-muted);
+    padding: 12px 18px;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-copy:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── Selected Count ── */
+  .sel-count {
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .sel-count span {
+    color: var(--accent3);
+    font-size: 1rem;
+  }
+
+  /* ── Random tab ── */
+  #tab-random .big-roll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    gap: 20px;
+  }
+
+  .roll-btn {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--accent1), var(--accent4));
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(233,69,96,0.5), 0 0 0 0 rgba(233,69,96,0.3);
+    transition: all 0.2s;
+    animation: pulse 2.5s infinite;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .roll-btn .dice-icon { font-size: 2.5rem; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 8px 32px rgba(233,69,96,0.5), 0 0 0 0 rgba(233,69,96,0.3); }
+    50%       { box-shadow: 0 8px 32px rgba(233,69,96,0.5), 0 0 0 16px rgba(233,69,96,0); }
+  }
+
+  .roll-btn:hover { transform: scale(1.05); }
+  .roll-btn:active { transform: scale(0.96); animation: none; }
+
+  .or-divider {
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    position: relative;
+    width: 100%;
+    text-align: center;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--accent3);
+    color: #0f3460;
+    font-weight: 800;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    transition: transform 0.3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Selected Pool (tab 2) ── */
+  .selected-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    min-height: 50px;
+    padding: 12px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 2px dashed rgba(255,255,255,0.1);
+    align-items: flex-start;
+    align-content: flex-start;
+  }
+
+  .pool-empty {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: auto;
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  .pool-chip {
+    background: rgba(0,212,170,0.15);
+    border: 1.5px solid rgba(0,212,170,0.4);
+    color: var(--accent3);
+    padding: 5px 10px 5px 12px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pool-chip button {
+    background: none;
+    border: none;
+    color: rgba(0,212,170,0.6);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.15s;
+  }
+
+  .pool-chip button:hover { color: var(--accent1); }
+
+  /* Spinning die animation */
+  .spinning { animation: spinBounce 0.4s ease-out; }
+  @keyframes spinBounce {
+    0%   { transform: rotate(0deg) scale(1); }
+    50%  { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  /* ── Letter Section ── */
+  .letter-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .letter-section-title {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .letter-btns-row {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .letter-roll-btn {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--accent2), #e07b00);
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(245,166,35,0.45);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .letter-roll-btn .letter-dice-icon { font-size: 1.8rem; }
+  .letter-roll-btn:hover { transform: scale(1.06); box-shadow: 0 8px 28px rgba(245,166,35,0.6); }
+  .letter-roll-btn:active { transform: scale(0.95); }
+
+  .letter-pick-btn {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(245,166,35,0.4);
+    background: rgba(245,166,35,0.08);
+    color: var(--accent2);
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .letter-pick-btn .letter-pick-icon { font-size: 1.8rem; }
+  .letter-pick-btn:hover { background: rgba(245,166,35,0.18); border-color: var(--accent2); transform: scale(1.06); }
+  .letter-pick-btn:active { transform: scale(0.95); }
+
+  .letter-result {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    animation: popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+
+  .letter-result.visible { display: block; }
+
+  .letter-bubble {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, rgba(245,166,35,0.15), rgba(245,166,35,0.05));
+    border: 2px solid rgba(245,166,35,0.4);
+    border-radius: 20px;
+    padding: 18px 36px;
+    box-shadow: 0 4px 24px rgba(245,166,35,0.15);
+  }
+
+  .letter-big {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(3rem, 14vw, 5rem);
+    color: var(--accent2);
+    line-height: 1;
+  }
+
+  .letter-sub {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* Alphabet picker overlay */
+  .alpha-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .alpha-overlay.open { display: flex; }
+
+  .alpha-sheet {
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    padding: 20px 16px 36px;
+    width: 100%;
+    max-width: 500px;
+    animation: slideUp 0.28s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .alpha-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .alpha-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    color: var(--accent2);
+  }
+
+  .alpha-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+  }
+
+  .alpha-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .alpha-btn {
+    aspect-ratio: 1;
+    border: 2px solid rgba(245,166,35,0.2);
+    border-radius: 12px;
+    background: rgba(245,166,35,0.05);
+    color: var(--text);
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .alpha-btn:hover, .alpha-btn:active {
+    background: var(--accent2);
+    color: #1a1a2e;
+    border-color: var(--accent2);
+    transform: scale(1.1);
+  }
+
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent1);
+    color: white;
+    border-radius: 50px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-left: 6px;
+  }
+
+  @media (max-width: 400px) {
+    .cat-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .action-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎲 Stadt Land<br>Vollpfosten</h1>
+  <p>Zufällige Kategorien für deine Runde</p>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('random')">🎲 Zufällig</button>
+    <button class="tab" onclick="switchTab('pick')">✅ Auswählen</button>
+  </div>
+
+  <!-- ═══ TAB: RANDOM ═══ -->
+  <div id="tab-random">
+    <div id="result-random" class="result-area">
+      <div class="result-label">Deine Kategorie</div>
+      <div class="result-bubble">
+        <div class="result-category" id="rand-cat-text"></div>
+        <div class="result-source" id="rand-cat-source"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-again" onclick="rollRandom()">
+          <span id="dice-spin">🎲</span> Nochmal!
+        </button>
+        <button class="btn-copy" onclick="copyResult('rand-cat-text')">📋 Kopieren</button>
+      </div>
+    </div>
+
+    <div class="big-roll">
+      <button class="roll-btn" onclick="rollRandom()">
+        <span class="dice-icon">🎲</span>
+        Würfeln!
+      </button>
+    </div>
+
+    <div style="margin-top:12px; text-align:center;">
+      <p style="color:var(--text-muted); font-size:0.82rem; font-weight:600;">Aus allen <strong style="color:var(--accent3)" id="total-count"></strong> Kategorien</p>
+    </div>
+
+    <!-- Letter Roller (random tab) -->
+    <div class="letter-section">
+      <div class="letter-section-title">🔤 Buchstaben würfeln</div>
+      <div class="letter-btns-row">
+        <button class="letter-roll-btn" onclick="rollLetter('rand')">
+          <span class="letter-dice-icon">🎲</span>
+          Zufall
+        </button>
+        <button class="letter-pick-btn" onclick="openAlpha('rand')">
+          <span class="letter-pick-icon">⚡</span>
+          Wählen
+        </button>
+      </div>
+      <div class="letter-result" id="letter-result-rand">
+        <div class="letter-bubble">
+          <div class="letter-big" id="letter-display-rand">A</div>
+          <div class="letter-sub">Euer Buchstabe</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: PICK ═══ -->
+  <div id="tab-pick" style="display:none;">
+
+    <div id="result-pick" class="result-area">
+      <div class="result-label">Deine Kategorie</div>
+      <div class="result-bubble">
+        <div class="result-category" id="pick-cat-text"></div>
+        <div class="result-source" id="pick-cat-source"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-again" onclick="rollFromPick()">
+          <span>🎲</span> Nochmal!
+        </button>
+        <button class="btn-copy" onclick="copyResult('pick-cat-text')">📋 Kopieren</button>
+      </div>
+    </div>
+
+    <div class="sel-count">
+      <span id="sel-num">0</span> Kategorien ausgewählt
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-random" onclick="rollFromPick()">🎲 Aus Auswahl würfeln</button>
+      <button class="btn btn-selectall" onclick="selectAll()">☑ Alle wählen</button>
+      <button class="btn btn-clear" onclick="clearAll()">✕ Leeren</button>
+    </div>
+
+    <!-- Section filter -->
+    <div class="section-filter" id="section-filter"></div>
+
+    <!-- Category chips -->
+    <div class="cat-grid" id="cat-grid"></div>
+
+    <!-- Letter Roller (pick tab) -->
+    <div class="letter-section">
+      <div class="letter-section-title">🔤 Buchstaben würfeln</div>
+      <div class="letter-btns-row">
+        <button class="letter-roll-btn" onclick="rollLetter('pick')">
+          <span class="letter-dice-icon">🎲</span>
+          Zufall
+        </button>
+        <button class="letter-pick-btn" onclick="openAlpha('pick')">
+          <span class="letter-pick-icon">⚡</span>
+          Wählen
+        </button>
+      </div>
+      <div class="letter-result" id="letter-result-pick">
+        <div class="letter-bubble">
+          <div class="letter-big" id="letter-display-pick">A</div>
+          <div class="letter-sub">Euer Buchstabe</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">📋 Kopiert!</div>
+
+<!-- Alphabet Picker Overlay -->
+<div class="alpha-overlay" id="alpha-overlay" onclick="closeAlphaOutside(event)">
+  <div class="alpha-sheet">
+    <div class="alpha-header">
+      <span class="alpha-title">⚡ Buchstabe wählen</span>
+      <button class="alpha-close" onclick="closeAlpha()">✕</button>
+    </div>
+    <div class="alpha-grid" id="alpha-grid"></div>
+  </div>
+</div>
+
+<script>
+const SECTIONS = [
+  {
+    name: "Klassiker",
+    emoji: "🏛",
+    cats: ["Stadt","Land","Fluss","Name","Tier","Beruf","Pflanze"]
+  },
+  {
+    name: "Seriös",
+    emoji: "😇",
+    cats: ["Adjektiv","App","Auf eine einsame Insel nehme ich…","Aus dem Garten","Ausrede für eine Verspätung","Ausrede für vergessene Hausaufgaben","Autor","Beruf","Das ist ekelhaft","Das ist süß","Dinge, die man am PC macht","Dinge, die man jeden Tag macht","Ein Wort auf Englisch","Eissorte","Elektrisches Gerät","Emotion / Gefühl","Etwas Eckiges","Etwas Rundes","Farbe","Film- / Serientitel","Fluss","Frauenname","Gegenstand","Gemüse","Getränk","Gewässer","Grund zur Freude","Grund zum Weinen","Hobby","Ich mag…","Insekt","Im Kinderzimmer","Im Restaurant","Ist gesund","Kann wachsen","Kindheitsheld","Kleidungsstück","Körperteil","Kosmetikprodukt","Kündigungsgrund","Land","Luxusgegenstand","Männername","Marke","Meerestier","Mit einem Löffel kann ich…","Möbelstück","Mordwaffe","Musiker","Musikinstrument","Musiktitel / Song","Obst","Omas sind…","Pflanze","Pizzabelag","Puh! Das stinkt.","Schauspieler","Schul- / Studienfach","Speise","Sportart","Sportler","Stadt","Süßigkeit","Superheld","Transportmittel","Tier","Tier, schwerer als 25kg","Typisch Jungs","Typisch Mädchen","Urlaubsziel","Verb mit 2 Silben","Versteck","Vogelart","Wort mit doppeltem Buchstaben"]
+  },
+  {
+    name: "Unseriös",
+    emoji: "😈",
+    cats: ["Alkoholisches Getränk","Allergie","Angst vor","Auf eine einsame Insel nehme ich…","Ausrede für eine Verspätung","Beim Arzt","Beruf","Das ist sexy","Das nervt so richtig!","Das tut weh!","Eissorte","Elektrisches Gerät","Etwas, das du wäschst","Etwas, das man schlägt","Farbe","Film / Serientitel","Flirtspruch","Fluss","Frauenname","Geschenk für Freund / Freundin","Getränk","Grund für Untreue","Grund zum Feiern","Hobby","Ich bin ja ganz lieb, aber…","Insekt","Im Badezimmer","Im Schlafzimmer","Kauf nach einem Lottogewinn","Kann fliegen","Kindheitsheld","Kleidungsstück","Kompliment","Körperteil","Kosename für Frauen","Kosename für Männer","Kosmetikprodukt","Krankheit","Kündigungsgrund","Land","Luxusgegenstand","Männername","Marke","Meerestier","Mit einem Löffel kann ich…","Mordmotiv","Mordwaffe","Musiker","Nervige Person","Nimmt man in den Mund","Obst","Ort fürs 1. Date","Puh! Das stinkt.","Pflanze","Promi","Schauspieler","Schimpfwort","Schlechter Ort fürs 1. Date","Schul- / Studienfach","Snack","Sportart","Stadt","Sucht","Süßigkeit","Tier, schwerer als 25kg","Transportmitttel","Trennungsgrund","Typisch Deutsch","Typisch Frau","Typisch Mann","Vogelart","Worte, die eine Freundschaft ruinieren","Ziemlich unsexy"]
+  },
+  {
+    name: "Sommer",
+    emoji: "☀️",
+    cats: ["Am Bufett","An der Autobahnraststätte","An der Hotelbar","Auf dem Kreuzfahrtschiff","Auf der Südhalbkugel","Auf einer Safari","Am Flughafen","Auf Mallorca","Beim Eselreiten","Beim Wandern","Berg","Biermarke","Bikinifarbe","Bleibt zu Hause","Brotbelag für eine Wanderung","Da würde ich niemals Urlaub machen","Das nervt so richtig!","Dinge, die man jeden Tag macht","Echt romantisch","Ein guter Reiseführer ist","Eissorte","Erfundene BILD-Schlagzeile","Erste Tat im Urlaub","Fehlkauf im Urlaub","Fluss","Freue mich auf zu Hause, weil","Gewässer","Gewürz","Größer als ein Elefant","Gründe für den Urlaubsabbruch","Hauptstadt","Hotelname / Hotelmarke","Ich bin Fahrer, weil","Ich fahre in den Urlaub mit","Im Dschungel","Im Flugzeug","Im Hotelzimmer","Im Pool","Im Urlaub","Insel","Kann ich beim Tauchen sehen","Kulinarische Spezialität","Lustiges Spiel","Mache ich am Strand","Mir geht es schlecht, weil","Nationalität","Ort außerhalb von Deutschland","Passt in einen Koffer","Peinlich am Strand","Peinlich im Hotel","Platz zum Ausruhen","Schlechter Anmachspruch","Schmeckt nach Sommer","Sehenswürdigkeit","Sommergetränk","Souvenir","Sprache","Steht im Reiseführer","Strandaccessoire","Süßigkeit","Tier, das zu Hause bleibt","Transportmittel","Typisch Deutsch","Typisch Franzose","Typisch Griechenland","Typisch Italien","Typisch Tourist","Urlaub, weil","Urlaubskarte an","Urlaubsland","Urlaubslektüre","Urlaubsreif, weil"]
+  },
+  {
+    name: "Weihnachten",
+    emoji: "🎄",
+    cats: ["(Winter-)Accessoire","Adventskalenderfüllung","Alleine an Weihnachten, weil","An Heiligabend","Angst vor","Auf dem Wunschzettel","Auf der Weihnachtsfeier","Backzutat","Bei der Oma","Bei der Schwiegermutter","Beim Schrottwichteln","Beim Winterspaziergang","Christbaumschmuck","Das nervt so richtig!","Dekoration","Echt romantisch","Fällt vom Himmel","Getränk","Gewürz","Glühwein macht mich","Größer als ein Tannenbaum","Gründe für kein Weihnachten","Gutschein für","Hilft gegen Winterdepressionen","Ich mag Weihnachten, weil","Im neuen Jahr werde ich","Im Schnee","Im Winter","Im Winterurlaub","In der Bibel","In der Kirche","In der Sauna","In der Silvesternacht","Kann man lesen","Kleiner als ein Teelicht","Köstlichkeit","Lustiges Spiel","Mein heißer Nikolaus wäre","Mit dem Nikolaus würde ich gerne","Mit einem Rentier würde ich","Muss an Weihnachten arbeiten","Möchte ich im Nikolauskostüm sehen","Nach der Silvesternacht","Ort für ein Weihnachtsdate","Raclettezutat","Schlechtes Weihnachtsgeschenk","Selbst gebastelt","Streit an Heiligabend","Süßigkeit","Teesorte","Thema für Silvesterfeier","Typisch Liebespaar","Typisch Mann","Typisch Weihnachten","Typisch Weihnachtsmarkt","Unterm Weihnachtsbaum","Vorsatz für das neue Jahr","Was man in der Weihnachtszeit macht","Während der Fahrt zur Oma","Weihnachtsdrink","Weihnachtsessen","Weihnachtskugelfarbe","Weihnachtslied","Weihnachtsgedicht","Weihnachtsgeschenk für Frauen","Weihnachtsgeschenk für Männer","Weihnachtskarte an","Weihnachtssnack","Winterquartier","Wintersportart","Weihnachtstradition","Winterurlaubsziel"]
+  },
+  {
+    name: "Party",
+    emoji: "🎉",
+    cats: ["Anmachspruch","Ausrede","Dinge, über die Frauen lästern","Dinge, über die Männer lästern","Grund für eine Job-Entlassung","Grund für den Weltuntergang","Grund fürs Zuspätkommen","Grund zum Feiern","Kosename","Krankheit","Scheidungsgrund","Schimpfwort","Verrücktes Hobby","Verbrechen"]
+  },
+  {
+    name: "Stars & Sport",
+    emoji: "🌟",
+    cats: ["Disney-Figur","Film","Filmstar / Schauspieler","Musiker / Band","Olympia-Disziplin","Serie","Song / Lied","Sportart","Sportler","Toter Star/Prominenter"]
+  },
+  {
+    name: "Essen & Trinken",
+    emoji: "🍕",
+    cats: ["alkoholisches Getränk","alkoholfreies Getränk","Biermarke","Cocktail","Eissorte","Gemüse","Getränk","Gewürz","Pizzabelag","Obst","Speise","Süßigkeit oder Snack"]
+  },
+  {
+    name: "Sonstiges",
+    emoji: "🗂",
+    cats: ["Frauenname","Gegenstand","Geschenkidee","Gewässer","Hunderasse","Insel","Jugendwort","Kleidungsstück","Körperteil","Krankheit","Männername","Meerestier","Pflanze","Politiker","Schulfach / Unifach","Superheld","Vogel"]
+  }
+];
+
+// Deduplicate
+const ALL_CATS = [];
+const seen = new Set();
+SECTIONS.forEach(s => {
+  s.cats.forEach(c => {
+    const key = c.toLowerCase().trim();
+    if (!seen.has(key)) { seen.add(key); ALL_CATS.push({name: c, section: s.name}); }
+  });
+});
+
+document.getElementById('total-count').textContent = ALL_CATS.length;
+
+let selectedCats = new Set();
+let activeSection = 'Alle';
+
+// ── Build section filter ──
+function buildSectionFilter() {
+  const el = document.getElementById('section-filter');
+  const sections = [{name:'Alle', emoji:'🌐'}, ...SECTIONS.map(s => ({name:s.name, emoji:s.emoji}))];
+  el.innerHTML = sections.map(s =>
+    `<button class="section-btn ${s.name===activeSection?'active':''}" onclick="filterSection('${s.name}')">${s.emoji} ${s.name}</button>`
+  ).join('');
+}
+
+function filterSection(name) {
+  activeSection = name;
+  buildSectionFilter();
+  buildGrid();
+}
+
+// ── Build category grid ──
+function buildGrid() {
+  const grid = document.getElementById('cat-grid');
+  const toShow = activeSection === 'Alle'
+    ? ALL_CATS
+    : ALL_CATS.filter(c => c.section === activeSection);
+
+  grid.innerHTML = toShow.map(c => {
+    const sel = selectedCats.has(c.name);
+    return `<button class="cat-chip ${sel?'selected':''}" onclick="toggleCat('${c.name.replace(/'/g,"\\'")}')">
+      ${c.name}
+    </button>`;
+  }).join('');
+  updateCount();
+}
+
+function toggleCat(name) {
+  if (selectedCats.has(name)) selectedCats.delete(name);
+  else selectedCats.add(name);
+  buildGrid();
+}
+
+function updateCount() {
+  document.getElementById('sel-num').textContent = selectedCats.size;
+}
+
+function selectAll() {
+  const toAdd = activeSection === 'Alle'
+    ? ALL_CATS
+    : ALL_CATS.filter(c => c.section === activeSection);
+  toAdd.forEach(c => selectedCats.add(c.name));
+  buildGrid();
+}
+
+function clearAll() {
+  if (activeSection === 'Alle') selectedCats.clear();
+  else ALL_CATS.filter(c => c.section === activeSection).forEach(c => selectedCats.delete(c.name));
+  buildGrid();
+}
+
+// ── Tab switching ──
+function switchTab(tab) {
+  document.getElementById('tab-random').style.display = tab === 'random' ? '' : 'none';
+  document.getElementById('tab-pick').style.display   = tab === 'pick'   ? '' : 'none';
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (tab==='random'&&i===0)||(tab==='pick'&&i===1)));
+}
+
+// ── Roll random (from all) ──
+function rollRandom() {
+  const cat = ALL_CATS[Math.floor(Math.random() * ALL_CATS.length)];
+  document.getElementById('rand-cat-text').textContent = cat.name;
+  document.getElementById('rand-cat-source').textContent = '📦 ' + cat.section;
+  const ra = document.getElementById('result-random');
+  ra.classList.remove('visible');
+  void ra.offsetWidth;
+  ra.classList.add('visible');
+
+  const dice = document.getElementById('dice-spin');
+  dice.classList.add('spinning');
+  setTimeout(() => dice.classList.remove('spinning'), 400);
+}
+
+// ── Roll from pick ──
+function rollFromPick() {
+  if (selectedCats.size === 0) {
+    showToast('⚠️ Keine Kategorien ausgewählt!');
+    return;
+  }
+  const arr = Array.from(selectedCats);
+  const name = arr[Math.floor(Math.random() * arr.length)];
+  const cat = ALL_CATS.find(c => c.name === name);
+  document.getElementById('pick-cat-text').textContent = name;
+  document.getElementById('pick-cat-source').textContent = cat ? '📦 ' + cat.section : '';
+  const ra = document.getElementById('result-pick');
+  ra.classList.remove('visible');
+  void ra.offsetWidth;
+  ra.classList.add('visible');
+}
+
+// ── Copy ──
+function copyResult(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Kopiert!'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Letter functions ──
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+let alphaTarget = 'rand';
+
+function rollLetter(target) {
+  const letter = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+  showLetter(target, letter, true);
+}
+
+function showLetter(target, letter, animate) {
+  const display = document.getElementById('letter-display-' + target);
+  const result  = document.getElementById('letter-result-' + target);
+  display.textContent = letter;
+  if (animate) {
+    result.classList.remove('visible');
+    void result.offsetWidth;
+  }
+  result.classList.add('visible');
+}
+
+function openAlpha(target) {
+  alphaTarget = target;
+  const grid = document.getElementById('alpha-grid');
+  grid.innerHTML = ALPHABET.map(l =>
+    `<button class="alpha-btn" onclick="pickLetter('${l}')">${l}</button>`
+  ).join('');
+  document.getElementById('alpha-overlay').classList.add('open');
+}
+
+function pickLetter(letter) {
+  closeAlpha();
+  showLetter(alphaTarget, letter, true);
+}
+
+function closeAlpha() {
+  document.getElementById('alpha-overlay').classList.remove('open');
+}
+
+function closeAlphaOutside(e) {
+  if (e.target === document.getElementById('alpha-overlay')) closeAlpha();
+}
+
+// ── Init ──
+buildSectionFilter();
+buildGrid();
+</script>
+</body>
+</html>
