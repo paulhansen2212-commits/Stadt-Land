@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+<html lang="de" data-theme="dark" data-layout="cards">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Stadt Land Vollpfosten 🎲</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══ THEME VARS ═══ */
+:root { --accent1:#e94560;--accent2:#f5a623;--accent3:#00d4aa;--accent4:#a855f7;--radius:16px; }
+[data-theme="dark"] {
+  --bg:#1a1a2e;--surface:#16213e;--card:#0f3460;--card2:#1a2a50;
+  --text:#f0f0f0;--text-muted:#9ca3af;
+  --border:rgba(255,255,255,0.09);--border-h:rgba(255,255,255,0.22);
+  --shadow:0 8px 32px rgba(0,0,0,0.4);--input-bg:#0f1a30;
+  --glow1:rgba(233,69,96,0.12);--glow2:rgba(168,85,247,0.12);--glow3:rgba(0,212,170,0.06);
+}
+[data-theme="light"] {
+  --bg:#f4f6fb;--surface:#ffffff;--card:#eef2ff;--card2:#f0faf7;
+  --text:#1a1a2e;--text-muted:#6b7280;
+  --border:rgba(0,0,0,0.09);--border-h:rgba(0,0,0,0.22);
+  --shadow:0 4px 24px rgba(0,0,0,0.10);--input-bg:#f9fafb;
+  --glow1:rgba(233,69,96,0.06);--glow2:rgba(168,85,247,0.06);--glow3:rgba(0,212,170,0.04);
+}
+
+/* ═══ BASE ═══ */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:‘Nunito’,sans-serif;background:var(–bg);color:var(–text);
+min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;
+background-image:radial-gradient(ellipse at 20% 20%,var(–glow1) 0%,transparent 50%),
+radial-gradient(ellipse at 80% 80%,var(–glow2) 0%,transparent 50%),
+radial-gradient(ellipse at 50% 50%,var(–glow3) 0%,transparent 70%);}
+
+header{text-align:center;padding:28px 20px 14px;}
+header h1{font-family:‘Fredoka One’,cursive;font-size:clamp(1.8rem,7vw,3.1rem);
+background:linear-gradient(135deg,var(–accent1),var(–accent2),var(–accent3));
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
+header p{color:var(–text-muted);margin-top:5px;font-size:.85rem;font-weight:600;}
+.container{max-width:760px;margin:0 auto;padding:0 14px 60px;}
+
+/* ═══ TABS ═══ */
+.tabs{display:flex;gap:5px;margin:18px 0 16px;background:var(–surface);
+border-radius:50px;padding:5px;border:1.5px solid var(–border);}
+.tab{flex:1;padding:9px 3px;border:none;border-radius:44px;background:transparent;
+color:var(–text-muted);font-family:‘Nunito’,sans-serif;font-weight:700;font-size:.79rem;
+cursor:pointer;transition:all .25s;}
+.tab.active{background:linear-gradient(135deg,var(–accent1),var(–accent4));
+color:#fff;box-shadow:0 3px 14px rgba(233,69,96,.4);}
+
+/* ═══ RESULT ═══ */
+.result-area{display:none;margin-bottom:20px;}
+.result-area.visible{display:block;}
+.result-bubble{background:linear-gradient(135deg,var(–card),var(–card2));
+border:2px solid rgba(0,212,170,.3);border-radius:20px;padding:20px 18px;
+box-shadow:var(–shadow),0 0 36px rgba(0,212,170,.08);
+animation:popIn .35s cubic-bezier(.175,.885,.32,1.275);
+position:relative;overflow:hidden;text-align:center;}
+.result-bubble::before{content:’’;position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+background:radial-gradient(ellipse at center,rgba(0,212,170,.07) 0%,transparent 60%);pointer-events:none;}
+@keyframes popIn{from{opacity:0;transform:scale(.85) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.result-label{font-size:.7rem;font-weight:700;color:var(–text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.result-pair{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
+.result-term{font-family:‘Fredoka One’,cursive;font-size:clamp(1.4rem,5vw,2.4rem);color:var(–accent3);line-height:1.2;}
+.result-letter-bubble{display:flex;align-items:center;justify-content:center;
+width:68px;height:68px;border-radius:50%;
+background:linear-gradient(135deg,rgba(245,166,35,.2),rgba(245,166,35,.04));
+border:2px solid rgba(245,166,35,.45);
+font-family:‘Fredoka One’,cursive;font-size:2rem;color:var(–accent2);flex-shrink:0;}
+.result-divider{width:2px;height:44px;background:var(–border);border-radius:2px;}
+.result-source{font-size:.7rem;color:var(–text-muted);font-weight:600;margin-top:8px;}
+.result-actions{display:flex;gap:8px;justify-content:center;margin-top:12px;}
+.btn-again{background:linear-gradient(135deg,var(–accent3),#00a080);color:#0f3460;
+font-weight:800;padding:9px 18px;border:none;border-radius:50px;
+font-family:‘Nunito’,sans-serif;font-size:.85rem;cursor:pointer;transition:all .2s;
+display:flex;align-items:center;gap:5px;}
+.btn-again:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,212,170,.4);}
+.btn-copy{background:var(–surface);color:var(–text-muted);padding:9px 14px;
+border:1.5px solid var(–border);border-radius:50px;font-family:‘Nunito’,sans-serif;
+font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-copy:hover{border-color:var(–accent2);color:var(–accent2);}
+
+/* ═══ GENERIC BUTTONS ═══ */
+.btn{padding:11px 14px;border:none;border-radius:var(–radius);font-family:‘Nunito’,sans-serif;
+font-weight:800;font-size:.85rem;cursor:pointer;transition:all .2s;
+display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-primary{background:linear-gradient(135deg,var(–accent1),var(–accent4));color:#fff;
+box-shadow:0 4px 18px rgba(233,69,96,.35);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(233,69,96,.5);}
+.btn-primary:active{transform:scale(.97);}
+.btn-ghost{background:var(–surface);color:var(–text-muted);border:1.5px solid var(–border);}
+.btn-ghost:hover{border-color:var(–border-h);color:var(–text);}
+.btn-yellow{background:var(–surface);color:var(–accent2);border:1.5px solid rgba(245,166,35,.3);}
+.btn-yellow:hover{background:rgba(245,166,35,.1);}
+
+/* ═══ LAYOUT: CARDS ═══ */
+[data-layout=“cards”] .big-roll-area{display:flex;flex-direction:column;align-items:center;padding:16px 0 8px;gap:10px;}
+[data-layout=“cards”] .roll-btn{width:160px;height:160px;border-radius:50%;border:none;
+background:linear-gradient(135deg,var(–accent1),var(–accent4));color:#fff;
+font-family:‘Fredoka One’,cursive;font-size:1.05rem;cursor:pointer;
+box-shadow:0 8px 32px rgba(233,69,96,.5),0 0 0 0 rgba(233,69,96,.3);
+animation:pulse 2.5s infinite;display:flex;flex-direction:column;
+align-items:center;justify-content:center;gap:6px;transition:transform .2s;}
+[data-layout=“cards”] .roll-btn .dice-icon{font-size:2.3rem;}
+[data-layout=“cards”] .roll-btn:hover{transform:scale(1.05);}
+[data-layout=“cards”] .roll-btn:active{transform:scale(.96);animation:none;}
+
+/* ═══ LAYOUT: MINIMAL ═══ */
+[data-layout=“minimal”] .big-roll-area{display:flex;align-items:center;justify-content:center;padding:18px 0 10px;}
+[data-layout=“minimal”] .roll-btn{width:100%;max-width:420px;height:62px;border-radius:50px;border:none;
+background:linear-gradient(90deg,var(–accent1),var(–accent4));color:#fff;
+font-family:‘Fredoka One’,cursive;font-size:1.15rem;cursor:pointer;
+display:flex;align-items:center;justify-content:center;gap:10px;
+transition:all .2s;box-shadow:0 4px 20px rgba(233,69,96,.35);}
+[data-layout=“minimal”] .roll-btn .dice-icon{font-size:1.4rem;}
+[data-layout=“minimal”] .roll-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(233,69,96,.5);}
+[data-layout=“minimal”] .roll-btn:active{transform:scale(.98);}
+[data-layout=“minimal”] .tabs{border-radius:8px;}
+[data-layout=“minimal”] .tab{border-radius:5px;}
+[data-layout=“minimal”] .result-bubble{border-radius:10px;}
+[data-layout=“minimal”] .kat-card{border-radius:8px;}
+
+/* ═══ LAYOUT: RETRO ═══ */
+[data-layout=“retro”] { –accent1:#ff4500;–accent2:#ffd700;–accent3:#00ff88;–accent4:#ff00bb; }
+[data-layout=“retro”] .big-roll-area{display:flex;flex-direction:column;align-items:center;padding:16px 0;}
+[data-layout=“retro”] .roll-btn{width:150px;height:150px;border-radius:16px;
+border:4px solid var(–accent2);background:var(–surface);color:var(–accent2);
+font-family:‘Fredoka One’,cursive;font-size:1.05rem;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+box-shadow:5px 5px 0 var(–accent1);transition:all .1s;}
+[data-layout=“retro”] .roll-btn .dice-icon{font-size:2.5rem;}
+[data-layout=“retro”] .roll-btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(–accent1);}
+[data-layout=“retro”] .roll-btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(–accent1);}
+[data-layout=“retro”] .tabs,.kat-card{border-radius:4px;}
+[data-layout=“retro”] .tab{border-radius:3px;font-family:‘Fredoka One’,cursive;}
+[data-layout=“retro”] .tab.active{box-shadow:3px 3px 0 rgba(0,0,0,.3);}
+[data-layout=“retro”] header h1{letter-spacing:3px;}
+[data-layout=“retro”] .result-bubble{border-radius:6px;border-width:3px;}
+[data-layout=“retro”] .btn{border-radius:4px;box-shadow:3px 3px 0 rgba(0,0,0,.22);}
+[data-layout=“retro”] .btn:active{box-shadow:1px 1px 0 rgba(0,0,0,.22);transform:translate(2px,2px);}
+[data-layout=“retro”] .btn-primary{box-shadow:3px 3px 0 rgba(0,0,0,.3);}
+[data-layout=“retro”] .result-letter-bubble{border-radius:8px;border-width:3px;}
+
+@keyframes pulse{
+0%,100%{box-shadow:0 8px 32px rgba(233,69,96,.5),0 0 0 0 rgba(233,69,96,.3);}
+50%{box-shadow:0 8px 32px rgba(233,69,96,.5),0 0 0 16px rgba(233,69,96,0);}
+}
+.spinning{animation:spinBounce .4s ease-out !important;}
+@keyframes spinBounce{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
+
+.stat-line{text-align:center;font-size:.77rem;font-weight:600;color:var(–text-muted);margin:6px 0 4px;}
+.stat-line strong{color:var(–accent3);}
+.stat-line b{color:var(–accent2);}
+
+/* ═══ PICK TAB ═══ */
+.sel-count{text-align:center;font-size:.78rem;font-weight:700;color:var(–text-muted);margin-bottom:12px;}
+.sel-count span{color:var(–accent3);font-size:.92rem;}
+.action-row{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;}
+.action-row .btn{flex:1;min-width:100px;}
+
+/* Kat quick-chips */
+.kat-chips-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
+.kat-chip-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:50px;
+border:1.5px solid var(–border);background:var(–surface);color:var(–text-muted);
+font-family:‘Nunito’,sans-serif;font-weight:800;font-size:.77rem;cursor:pointer;transition:all .17s;white-space:nowrap;}
+.kat-chip-btn:hover{border-color:var(–border-h);color:var(–text);}
+.kat-chip-btn.all-active{border-color:var(–accent3);background:rgba(0,212,170,.13);color:var(–accent3);}
+.kat-chip-btn.partial-active{border-color:rgba(0,212,170,.5);background:rgba(0,212,170,.07);color:var(–accent3);}
+.kc-badge{background:rgba(0,212,170,.25);color:var(–accent3);border-radius:50px;padding:1px 6px;font-size:.68rem;}
+
+/* Search */
+.search-row{margin-bottom:12px;position:relative;}
+.search-input{width:100%;padding:10px 13px 10px 36px;border-radius:50px;
+border:1.5px solid var(–border);background:var(–input-bg);color:var(–text);
+font-family:‘Nunito’,sans-serif;font-weight:600;font-size:.84rem;outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:rgba(0,212,170,.4);}
+.s-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none;}
+
+/* Accordion */
+.kat-card{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius);margin-bottom:8px;overflow:hidden;transition:border-color .2s;}
+.kat-card.has-sel{border-color:rgba(0,212,170,.36);}
+.kat-header{display:flex;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;user-select:none;transition:background .15s;}
+.kat-header:hover{background:rgba(128,128,128,.04);}
+.kat-cb{width:20px;height:20px;border-radius:5px;border:1.5px solid var(–border-h);background:transparent;
+flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .13s;cursor:pointer;font-size:.77rem;}
+.kat-cb.checked{background:var(–accent3);border-color:var(–accent3);color:#0f3460;}
+.kat-cb.partial{background:rgba(0,212,170,.22);border-color:var(–accent3);color:var(–accent3);}
+.kat-emoji{font-size:1.05rem;flex-shrink:0;}
+.kat-name{font-family:‘Fredoka One’,cursive;font-size:.94rem;color:var(–text);flex:1;}
+.kat-num{background:rgba(0,212,170,.17);color:var(–accent3);border-radius:50px;padding:1px 7px;font-size:.68rem;font-weight:800;}
+.kat-meta{font-size:.68rem;font-weight:700;color:var(–text-muted);white-space:nowrap;}
+.kat-chev{color:var(–text-muted);font-size:.72rem;transition:transform .25s;flex-shrink:0;}
+.kat-chev.open{transform:rotate(180deg);}
+.kat-body{display:none;padding:0 12px 12px;}
+.kat-body.open{display:block;}
+.kat-body-ctrl{display:flex;gap:6px;margin-bottom:8px;}
+.kat-body-btn{padding:4px 10px;border-radius:50px;border:1.5px solid var(–border);background:transparent;
+color:var(–text-muted);font-family:‘Nunito’,sans-serif;font-weight:700;font-size:.69rem;cursor:pointer;transition:all .13s;}
+.kat-body-btn:hover{border-color:var(–accent2);color:var(–accent2);}
+.begriff-grid{display:flex;flex-wrap:wrap;gap:5px;}
+.begriff-chip{padding:4px 11px;border-radius:50px;border:1.5px solid var(–border);
+background:rgba(128,128,128,.04);color:var(–text-muted);
+font-family:‘Nunito’,sans-serif;font-weight:700;font-size:.72rem;
+cursor:pointer;transition:all .13s;white-space:nowrap;}
+.begriff-chip:hover{border-color:var(–border-h);color:var(–text);}
+.begriff-chip.sel{border-color:var(–accent3);background:rgba(0,212,170,.12);color:var(–accent3);}
+
+/* ═══ LETTER SECTION ═══ */
+.letter-section{margin-top:22px;padding-top:18px;border-top:1px solid var(–border);}
+.letter-section-title{text-align:center;font-size:.7rem;font-weight:700;letter-spacing:2px;
+text-transform:uppercase;color:var(–text-muted);margin-bottom:14px;}
+.letter-btns-row{display:flex;gap:11px;justify-content:center;align-items:center;flex-wrap:wrap;}
+.letter-roll-btn{width:96px;height:96px;border-radius:50%;border:none;
+background:linear-gradient(135deg,var(–accent2),#e07b00);color:#fff;
+font-family:‘Fredoka One’,cursive;font-size:.88rem;cursor:pointer;
+box-shadow:0 5px 18px rgba(245,166,35,.4);transition:all .2s;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;}
+.letter-roll-btn .ldi{font-size:1.65rem;}
+.letter-roll-btn:hover{transform:scale(1.07);}
+.letter-roll-btn:active{transform:scale(.94);}
+.letter-pick-btn{width:96px;height:96px;border-radius:50%;border:2px solid rgba(245,166,35,.38);
+background:rgba(245,166,35,.07);color:var(–accent2);font-family:‘Fredoka One’,cursive;font-size:.88rem;
+cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;}
+.letter-pick-btn .lpi{font-size:1.65rem;}
+.letter-pick-btn:hover{background:rgba(245,166,35,.17);border-color:var(–accent2);transform:scale(1.07);}
+.letter-pick-btn:active{transform:scale(.94);}
+.letter-result{display:none;text-align:center;margin-top:14px;animation:popIn .3s cubic-bezier(.175,.885,.32,1.275);}
+.letter-result.visible{display:block;}
+.letter-bubble{display:inline-flex;flex-direction:column;align-items:center;gap:3px;
+background:linear-gradient(135deg,rgba(245,166,35,.13),rgba(245,166,35,.03));
+border:2px solid rgba(245,166,35,.36);border-radius:16px;padding:14px 30px;
+box-shadow:0 3px 18px rgba(245,166,35,.11);}
+.letter-big{font-family:‘Fredoka One’,cursive;font-size:clamp(2.4rem,11vw,4rem);color:var(–accent2);line-height:1;}
+.letter-sub{font-size:.7rem;font-weight:700;color:var(–text-muted);letter-spacing:1px;}
+
+/* Alpha overlay */
+.alpha-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;
+align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.alpha-overlay.open{display:flex;}
+.alpha-sheet{background:var(–surface);border-radius:22px 22px 0 0;padding:17px 13px 30px;
+width:100%;max-width:480px;animation:slideUp .27s cubic-bezier(.25,.46,.45,.94);
+border-top:2px solid var(–border);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.alpha-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.alpha-title{font-family:‘Fredoka One’,cursive;font-size:1.1rem;color:var(–accent2);}
+.alpha-close{background:none;border:none;color:var(–text-muted);font-size:1.25rem;cursor:pointer;padding:3px 7px;line-height:1;}
+.alpha-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+.alpha-btn{aspect-ratio:1;border:1.5px solid rgba(245,166,35,.2);border-radius:9px;
+background:rgba(245,166,35,.05);color:var(–text);font-family:‘Fredoka One’,cursive;font-size:1.05rem;
+cursor:pointer;transition:all .13s;display:flex;align-items:center;justify-content:center;}
+.alpha-btn:hover,.alpha-btn:active{background:var(–accent2);color:#1a1a2e;border-color:var(–accent2);transform:scale(1.1);}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+background:var(–accent3);color:#0f3460;font-weight:800;padding:10px 20px;border-radius:50px;
+font-size:.8rem;transition:transform .3s;z-index:999;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ═══ OPTIONS TAB ═══ */
+.opts-sec{margin-bottom:22px;}
+.opts-sec-title{font-family:‘Fredoka One’,cursive;font-size:1rem;color:var(–accent2);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.divider{height:1px;background:var(–border);margin:18px 0;}
+.toggle-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.toggle-btn{flex:1;min-width:90px;padding:10px 12px;border-radius:12px;border:1.5px solid var(–border);
+background:var(–surface);color:var(–text-muted);font-family:‘Nunito’,sans-serif;font-weight:700;
+font-size:.8rem;cursor:pointer;transition:all .17s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.toggle-btn .tb-i{font-size:1.3rem;}
+.toggle-btn:hover{border-color:var(–border-h);color:var(–text);}
+.toggle-btn.active{border-color:var(–accent4);background:rgba(168,85,247,.11);color:var(–accent4);}
+.opts-kat-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.opts-kat-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:50px;
+border:1.5px solid var(–border);background:var(–surface);color:var(–text);
+font-family:‘Nunito’,sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .15s;}
+.opts-kat-chip:hover{border-color:var(–border-h);}
+.opts-kat-chip.excl{border-color:var(–accent1);background:rgba(233,69,96,.11);color:var(–accent1);text-decoration:line-through;opacity:.75;}
+.opts-excl-terms{display:flex;flex-wrap:wrap;gap:5px;min-height:36px;padding:9px;
+background:var(–input-bg);border:1.5px dashed var(–border);border-radius:11px;margin-bottom:9px;
+align-items:flex-start;align-content:flex-start;}
+.excl-term-chip{background:rgba(233,69,96,.13);border:1.5px solid rgba(233,69,96,.36);color:var(–accent1);
+padding:3px 9px;border-radius:50px;font-size:.71rem;font-weight:700;display:flex;align-items:center;gap:4px;}
+.excl-term-chip button{background:none;border:none;color:rgba(233,69,96,.55);cursor:pointer;font-size:.8rem;padding:0;line-height:1;transition:color .13s;}
+.excl-term-chip button:hover{color:var(–accent1);}
+.opts-empty{color:var(–text-muted);font-size:.77rem;font-weight:600;font-style:italic;}
+.opts-search-wrap{position:relative;margin-bottom:7px;}
+.opts-search-input{width:100%;padding:8px 12px 8px 34px;border-radius:50px;border:1.5px solid var(–border);
+background:var(–input-bg);color:var(–text);font-family:‘Nunito’,sans-serif;font-weight:600;font-size:.81rem;outline:none;transition:border-color .2s;}
+.opts-search-input:focus{border-color:rgba(233,69,96,.4);}
+.opts-term-results{display:flex;flex-wrap:wrap;gap:5px;max-height:150px;overflow-y:auto;padding:3px 0;}
+.opts-term-chip{padding:4px 10px;border-radius:50px;border:1.5px solid var(–border);
+background:var(–surface);color:var(–text-muted);font-family:‘Nunito’,sans-serif;font-weight:700;font-size:.71rem;cursor:pointer;transition:all .13s;}
+.opts-term-chip:hover{border-color:var(–accent1);color:var(–accent1);}
+.opts-term-chip.excl{border-color:var(–accent1);background:rgba(233,69,96,.11);color:var(–accent1);text-decoration:line-through;opacity:.6;}
+.opts-note{font-size:.73rem;color:var(–text-muted);font-weight:600;padding:9px 12px;border-radius:9px;
+background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.16);margin-top:9px;}
+.opts-sub{font-size:.76rem;color:var(–text-muted);font-weight:600;margin-bottom:10px;}
+
+@media(max-width:400px){.action-row,.toggle-grid{flex-direction:column;}}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>🎲 Stadt Land<br>Vollpfosten</h1>
+  <p>Begriff &amp; Buchstabe in einem Wurf</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('random')">🎲 Zufällig</button>
+    <button class="tab" onclick="switchTab('pick')">✅ Auswählen</button>
+    <button class="tab" onclick="switchTab('options')">⚙️ Optionen</button>
+  </div>
+
+  <!-- ════ TAB: ZUFÄLLIG ════ -->
+
+  <div id="tab-random">
+    <div id="result-random" class="result-area">
+      <div class="result-bubble">
+        <div class="result-label">Dein Wurf</div>
+        <div class="result-pair">
+          <div class="result-term" id="rand-term"></div>
+          <div class="result-divider"></div>
+          <div class="result-letter-bubble" id="rand-letter">A</div>
+        </div>
+        <div class="result-source" id="rand-source"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-again" onclick="rollRandom()"><span id="dice-spin">🎲</span> Nochmal!</button>
+        <button class="btn-copy" onclick="copyResult('rand-term')">📋 Kopieren</button>
+      </div>
+    </div>
+
+```
+<div class="big-roll-area">
+  <button class="roll-btn" onclick="rollRandom()">
+    <span class="dice-icon">🎲</span>Würfeln!
+  </button>
+</div>
+
+<div class="stat-line">Aus <strong id="total-count">0</strong> Begriffen in <b id="total-cats">0</b> Kategorien</div>
+
+<div class="letter-section">
+  <div class="letter-section-title">🔤 Nur Buchstabe würfeln</div>
+  <div class="letter-btns-row">
+    <button class="letter-roll-btn" onclick="rollLetterOnly('rand')"><span class="ldi">🎲</span>Zufall</button>
+    <button class="letter-pick-btn" onclick="openAlpha('rand')"><span class="lpi">⚡</span>Wählen</button>
+  </div>
+  <div class="letter-result" id="lr-rand">
+    <div class="letter-bubble">
+      <div class="letter-big" id="ld-rand">A</div>
+      <div class="letter-sub">Euer Buchstabe</div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ════ TAB: AUSWÄHLEN ════ -->
+
+  <div id="tab-pick" style="display:none">
+    <div id="result-pick" class="result-area">
+      <div class="result-bubble">
+        <div class="result-label">Dein Wurf</div>
+        <div class="result-pair">
+          <div class="result-term" id="pick-term"></div>
+          <div class="result-divider"></div>
+          <div class="result-letter-bubble" id="pick-letter">A</div>
+        </div>
+        <div class="result-source" id="pick-source"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-again" onclick="rollFromPick()"><span>🎲</span> Nochmal!</button>
+        <button class="btn-copy" onclick="copyResult('pick-term')">📋 Kopieren</button>
+      </div>
+    </div>
+
+```
+<div class="sel-count"><span id="sel-num">0</span> Begriffe ausgewählt</div>
+
+<div class="action-row">
+  <button class="btn btn-primary" onclick="rollFromPick()">🎲 Würfeln</button>
+  <button class="btn btn-yellow" onclick="selectAllVisible()">☑ Alle</button>
+  <button class="btn btn-ghost" onclick="clearAllVisible()">✕ Leeren</button>
+</div>
+
+<!-- Kategorie Quick-Chips -->
+<div class="kat-chips-wrap" id="kat-chips"></div>
+
+<div class="search-row">
+  <span class="s-icon">🔍</span>
+  <input class="search-input" type="text" placeholder="Kategorien oder Begriffe suchen…" id="search-input" oninput="onSearch()">
+</div>
+
+<div id="kat-list"></div>
+
+<div class="letter-section">
+  <div class="letter-section-title">🔤 Nur Buchstabe würfeln</div>
+  <div class="letter-btns-row">
+    <button class="letter-roll-btn" onclick="rollLetterOnly('pick')"><span class="ldi">🎲</span>Zufall</button>
+    <button class="letter-pick-btn" onclick="openAlpha('pick')"><span class="lpi">⚡</span>Wählen</button>
+  </div>
+  <div class="letter-result" id="lr-pick">
+    <div class="letter-bubble">
+      <div class="letter-big" id="ld-pick">A</div>
+      <div class="letter-sub">Euer Buchstabe</div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ════ TAB: OPTIONEN ════ -->
+
+  <div id="tab-options" style="display:none">
+
+```
+<div class="opts-sec">
+  <div class="opts-sec-title">🎨 Erscheinungsbild</div>
+  <div class="toggle-grid">
+    <button class="toggle-btn active" id="theme-dark" onclick="setTheme('dark')">
+      <span class="tb-i">🌙</span>Dunkel
+    </button>
+    <button class="toggle-btn" id="theme-light" onclick="setTheme('light')">
+      <span class="tb-i">☀️</span>Hell
+    </button>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="opts-sec">
+  <div class="opts-sec-title">📐 Layout</div>
+  <div class="toggle-grid">
+    <button class="toggle-btn active" id="layout-cards" onclick="setLayout('cards')">
+      <span class="tb-i">🎡</span>Klassisch
+    </button>
+    <button class="toggle-btn" id="layout-minimal" onclick="setLayout('minimal')">
+      <span class="tb-i">⬛</span>Minimal
+    </button>
+    <button class="toggle-btn" id="layout-retro" onclick="setLayout('retro')">
+      <span class="tb-i">👾</span>Retro
+    </button>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="opts-sec">
+  <div class="opts-sec-title">🚫 Kategorien ausblenden</div>
+  <p class="opts-sub">Tippe auf eine Kategorie um sie aus dem Spiel zu entfernen.</p>
+  <div class="opts-kat-grid" id="opts-kats"></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="opts-sec">
+  <div class="opts-sec-title">🔇 Einzelne Begriffe ausblenden</div>
+  <div class="opts-excl-terms" id="opts-excl-terms">
+    <span class="opts-empty">Noch keine Begriffe ausgeblendet.</span>
+  </div>
+  <div class="opts-search-wrap">
+    <span class="s-icon" style="font-size:.83rem">🔍</span>
+    <input class="opts-search-input" type="text" placeholder="Begriff suchen…" id="opts-term-search" oninput="onOptsSearch()">
+  </div>
+  <div class="opts-term-results" id="opts-term-results"></div>
+  <div class="opts-note">💡 Alle Einstellungen werden automatisch gespeichert.</div>
+</div>
+```
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="alpha-overlay" id="alpha-overlay" onclick="closeAlphaOut(event)">
+  <div class="alpha-sheet">
+    <div class="alpha-header">
+      <span class="alpha-title">⚡ Buchstabe wählen</span>
+      <button class="alpha-close" onclick="closeAlpha()">✕</button>
+    </div>
+    <div class="alpha-grid" id="alpha-grid"></div>
+  </div>
+</div>
+
+<script>
+// ══ DATA ══
+const KATEGORIEN = [
+  {name:"Klassiker",emoji:"🏛",begriffe:["Stadt","Land","Fluss","Name","Tier","Beruf","Pflanze","Gewässer","Berg","Insel","Hauptstadt","Nationalität","Sprache","Landschaft","Kontinent"]},
+  {name:"Seriös",emoji:"😇",begriffe:["Adjektiv","App","Auf eine einsame Insel nehme ich…","Aus dem Garten","Ausrede für eine Verspätung","Ausrede für vergessene Hausaufgaben","Autor","Beruf","Das ist ekelhaft","Das ist süß","Dinge die man am PC macht","Dinge die man jeden Tag macht","Ein Wort auf Englisch","Eissorte","Elektrisches Gerät","Emotion / Gefühl","Etwas Eckiges","Etwas Rundes","Farbe","Film- / Serientitel","Fluss","Frauenname","Gegenstand","Gemüse","Getränk","Gewässer","Grund zur Freude","Grund zum Weinen","Hobby","Ich mag…","Insekt","Im Kinderzimmer","Im Restaurant","Ist gesund","Kann wachsen","Kindheitsheld","Kleidungsstück","Körperteil","Kosmetikprodukt","Kündigungsgrund","Land","Luxusgegenstand","Männername","Marke","Meerestier","Mit einem Löffel kann ich…","Möbelstück","Mordwaffe","Musiker","Musikinstrument","Musiktitel / Song","Obst","Omas sind…","Pflanze","Pizzabelag","Puh! Das stinkt.","Schauspieler","Schul- / Studienfach","Speise","Sportart","Sportler","Stadt","Süßigkeit","Superheld","Transportmittel","Tier","Tier schwerer als 25kg","Typisch Jungs","Typisch Mädchen","Urlaubsziel","Verb mit 2 Silben","Versteck","Vogelart","Wort mit doppeltem Buchstaben","Buchtitel","Erfindung","Gebirge","Automarke","Dinosaurier","Chemisches Element","Berühmter Wissenschaftler","Historische Person","Bauwerk"]},
+  {name:"Unseriös",emoji:"😈",begriffe:["Alkoholisches Getränk","Allergie","Angst vor","Auf eine einsame Insel nehme ich…","Ausrede für eine Verspätung","Beim Arzt","Beruf","Das ist sexy","Das nervt so richtig!","Das tut weh!","Eissorte","Elektrisches Gerät","Etwas das du wäschst","Etwas das man schlägt","Farbe","Film / Serientitel","Flirtspruch","Fluss","Frauenname","Geschenk für Freund / Freundin","Getränk","Grund für Untreue","Grund zum Feiern","Hobby","Ich bin ja ganz lieb aber…","Insekt","Im Badezimmer","Im Schlafzimmer","Kauf nach einem Lottogewinn","Kann fliegen","Kindheitsheld","Kleidungsstück","Kompliment","Körperteil","Kosename für Frauen","Kosename für Männer","Kosmetikprodukt","Krankheit","Kündigungsgrund","Land","Luxusgegenstand","Männername","Marke","Meerestier","Mit einem Löffel kann ich…","Mordmotiv","Mordwaffe","Musiker","Nervige Person","Nimmt man in den Mund","Obst","Ort fürs 1. Date","Puh! Das stinkt.","Pflanze","Promi","Schauspieler","Schimpfwort","Schlechter Ort fürs 1. Date","Schul- / Studienfach","Snack","Sportart","Stadt","Sucht","Süßigkeit","Tier schwerer als 25kg","Transportmittel","Trennungsgrund","Typisch Deutsch","Typisch Frau","Typisch Mann","Vogelart","Worte die eine Freundschaft ruinieren","Ziemlich unsexy","Straftat","Leichenversteck","Anderes Wort für Geld","Fetisch","Grund für einen Seitensprung","Anmachspruch","Scheidungsgrund","Peinlicher Moment","Laster","Schlechte Angewohnheit"]},
+  {name:"Party",emoji:"🎉",begriffe:["Anmachspruch","Ausrede","Dinge über die Frauen lästern","Dinge über die Männer lästern","Grund für eine Job-Entlassung","Grund für den Weltuntergang","Grund fürs Zuspätkommen","Grund zum Feiern","Kosename","Krankheit","Scheidungsgrund","Schimpfwort","Verrücktes Hobby","Verbrechen","Partyspiel","Partytrick","Kater-Heilmittel","Peinliches Partyfoto","Was man auf einer Party nicht sagen sollte","Betrunkener Satz"]},
+  {name:"Stars & Sport",emoji:"🌟",begriffe:["Disney-Figur","Film","Filmstar / Schauspieler","Musiker / Band","Olympia-Disziplin","Serie","Song / Lied","Sportart","Sportler","Toter Star / Prominenter","Superheld","Comicfigur","Videospiel","Youtuber / Influencer","TikTok-Trend","Berühmtes Gemälde","Oscar-Film","Podcast","Realityshow","Sportverein","Weltrekord"]},
+  {name:"Essen & Trinken",emoji:"🍕",begriffe:["Alkoholisches Getränk","Alkoholfreies Getränk","Biermarke","Cocktail","Eissorte","Gemüse","Getränk","Gewürz","Pizzabelag","Obst","Speise","Süßigkeit oder Snack","Käsesorte","Brotsorte","Nudelgericht","Resteessen","Streetfood","Asiatisches Gericht","Italienisches Gericht","Dessert","Frühstücksidee","Partysnack","Grillgut","Saucenart","Kräuter","Restaurantkette","Küchengerät","Teesorte","Kaffeespezialität","Schokoriegel"]},
+  {name:"Sommer",emoji:"☀️",begriffe:["Am Bufett","An der Autobahnraststätte","An der Hotelbar","Auf dem Kreuzfahrtschiff","Auf der Südhalbkugel","Auf einer Safari","Am Flughafen","Auf Mallorca","Beim Wandern","Berg","Biermarke","Bikinifarbe","Brotbelag für eine Wanderung","Da würde ich niemals Urlaub machen","Das nervt so richtig!","Eissorte","Erste Tat im Urlaub","Fehlkauf im Urlaub","Fluss","Freue mich auf zu Hause weil","Gewässer","Gewürz","Gründe für den Urlaubsabbruch","Hauptstadt","Im Dschungel","Im Flugzeug","Im Hotelzimmer","Im Pool","Im Urlaub","Insel","Kann ich beim Tauchen sehen","Kulinarische Spezialität","Mache ich am Strand","Nationalität","Ort außerhalb von Deutschland","Passt in einen Koffer","Peinlich am Strand","Peinlich im Hotel","Schmeckt nach Sommer","Sehenswürdigkeit","Sommergetränk","Souvenir","Sprache","Strandaccessoire","Süßigkeit","Tier das zu Hause bleibt","Transportmittel","Typisch Deutsch","Typisch Franzose","Typisch Griechenland","Typisch Tourist","Urlaubsland","Urlaubslektüre"]},
+  {name:"Weihnachten",emoji:"🎄",begriffe:["Adventskalenderfüllung","Alleine an Weihnachten weil","An Heiligabend","Auf dem Wunschzettel","Auf der Weihnachtsfeier","Backzutat","Bei der Oma","Bei der Schwiegermutter","Beim Schrottwichteln","Christbaumschmuck","Dekoration","Fällt vom Himmel","Getränk","Gewürz","Glühwein macht mich","Gründe für kein Weihnachten","Gutschein für","Im neuen Jahr werde ich","Im Schnee","Im Winter","Im Winterurlaub","In der Silvesternacht","Kleiner als ein Teelicht","Köstlichkeit","Lustiges Spiel","Mit dem Nikolaus würde ich gerne","Nach der Silvesternacht","Ort für ein Weihnachtsdate","Raclettezutat","Schlechtes Weihnachtsgeschenk","Selbst gebastelt","Streit an Heiligabend","Süßigkeit","Teesorte","Thema für Silvesterfeier","Typisch Liebespaar","Typisch Weihnachten","Typisch Weihnachtsmarkt","Unterm Weihnachtsbaum","Vorsatz für das neue Jahr","Weihnachtsdrink","Weihnachtsessen","Weihnachtskugelfarbe","Weihnachtslied","Weihnachtsgeschenk für Frauen","Weihnachtsgeschenk für Männer","Weihnachtssnack","Wintersportart","Winterurlaubsziel"]},
+  {name:"Alltag & Leben",emoji:"🏡",begriffe:["Frauenname","Männername","Gegenstand","Geschenkidee","Gewässer","Hunderasse","Insel","Jugendwort","Kleidungsstück","Körperteil","Krankheit","Meerestier","Pflanze","Politiker","Schulfach / Unifach","Superheld","Vogel","Im Büro","Im Supermarkt","Im Wartezimmer","Auf dem Spielplatz","Im Fitnessstudio","Am Telefon","Auf Instagram","Typische Ausrede","Grund für Krankmeldung","Dinge die man verliert","Etwas das immer kaputt geht","Im Kühlschrank","Im Auto","Auf dem Schreibtisch","Nervige Nachbarn machen…","Haustier"]},
+  {name:"Natur & Wissen",emoji:"🌿",begriffe:["Tier","Pflanze","Vogelart","Meerestier","Insekt","Baum","Blume","Gebirge","Fluss","See","Kontinent","Planet","Chemisches Element","Mineral / Stein","Wetterereignis","Jahreszeit","Dinosaurier","Ausgestorbenes Tier","Naturphänomen","Pilzart","Fischsorte","Amphibie","Reptil"]},
+  {name:"Popkultur",emoji:"🎬",begriffe:["Film","Serie","Streaming-Serie","Animationsfilm","Manga / Anime","Comic","Superheld","Videospiel","Musikband","Solokünstler / Sängerin","Song","Album","Podcast","Youtuber","TikToker","Meme","Realityshow","Talkshow","Moderator","Filmzitat","Serienfigur","Comicfigur","Filmregisseur","Literaturklassiker"]},
+  {name:"Reise & Länder",emoji:"✈️",begriffe:["Urlaubsland","Hauptstadt","Sehenswürdigkeit","Flughafen","Airline","Hotelkette","Weltwunder","Insel","Gebirge","Wüste","Nationalpark","Fluss","Kontinent","Typisches Gericht des Landes","Landessprache","Währung","Berühmter Strand","Touristenfalle","Rucksackreiseziel","Luxusreiseziel","Fernwehziel"]},
+  {name:"Beziehung & Gefühle",emoji:"💕",begriffe:["Kompliment","Flirtspruch","Kosename","Trennungsgrund","Liebesfilm","Ort fürs 1. Date","Schlechter Ort fürs 1. Date","Liebeszeichen","Romantische Geste","Eifersucht wegen…","Versöhnungsgeschenk","Verlieben durch…","Kennengelernt bei…","Hochzeitsort","Hochzeitskatastrophe","Was nervt in einer Beziehung","Typisch verliebt","Typisch Single"]},
+  {name:"Arbeit & Karriere",emoji:"💼",begriffe:["Beruf","Kündigungsgrund","Ausrede für Zuspätkommen","Im Meeting","Büromaterial","Nerviger Kollege macht…","Chefspruch","Bewerbungsfloskeln","Homeoffice-Problem","Karrierekiller","Fachrichtung / Studiengang","Gehaltserhöhungsausrede","Meetingbegriff / Buzzword","Unternehmen / Firma","Startup-Idee","Berufskleidung"]},
+  {name:"Sport & Bewegung",emoji:"⚽",begriffe:["Sportart","Sportler / Athletin","Olympische Disziplin","Sportverein / Fußballklub","Sportausrüstung","Sportgetränk","Trainingsübung","Sportverletzung","Sportstadion","Sportlegende","E-Sport-Spiel","Extremsportart","Kampfsportart","Wassersportart","Wintersportart","Tanzsportart","Mannschaftssport","Individualsport"]}
+];
+
+// ══ STATE ══
+const sel      = new Set(); // selected begriffe
+const exclKats = new Set(); // excluded kategorie names
+const exclTerms= new Set(); // excluded individual terms
+const openKats = new Set(); // open accordion indices
+let searchQ    = '';
+let alphaTarget= 'rand';
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+// ══ COMPUTED ══
+function activeKats() {
+  return KATEGORIEN.filter(k => !exclKats.has(k.name)).map(k => ({
+    ...k, begriffe: k.begriffe.filter(b => !exclTerms.has(b))
+  })).filter(k => k.begriffe.length);
+}
+function allActive() {
+  const r=[];
+  activeKats().forEach(k=>k.begriffe.forEach(b=>r.push({name:b,kat:k.name})));
+  return r;
+}
+function updateStats() {
+  const a=activeKats();
+  document.getElementById('total-count').textContent=a.reduce((s,k)=>s+k.begriffe.length,0);
+  document.getElementById('total-cats').textContent=a.length;
+}
+
+// ══ ROLL ══
+function rndLetter(){return ALPHABET[Math.floor(Math.random()*26)];}
+
+function rollRandom(){
+  const pool=allActive();
+  if(!pool.length){showToast('⚠️ Alle Kategorien ausgeblendet!');return;}
+  const item=pool[Math.floor(Math.random()*pool.length)];
+  const let_=rndLetter();
+  document.getElementById('rand-term').textContent=item.name;
+  document.getElementById('rand-source').textContent='📦 '+item.kat;
+  document.getElementById('rand-letter').textContent=let_;
+  const ra=document.getElementById('result-random');
+  ra.classList.remove('visible');void ra.offsetWidth;ra.classList.add('visible');
+  const d=document.getElementById('dice-spin');
+  d.classList.add('spinning');setTimeout(()=>d.classList.remove('spinning'),420);
+}
+
+function rollFromPick(){
+  const arr=[...sel].filter(b=>!exclTerms.has(b));
+  if(!arr.length){showToast('⚠️ Keine Begriffe ausgewählt!');return;}
+  const name=arr[Math.floor(Math.random()*arr.length)];
+  const item=allActive().find(b=>b.name===name);
+  const let_=rndLetter();
+  document.getElementById('pick-term').textContent=name;
+  document.getElementById('pick-source').textContent=item?'📦 '+item.kat:'';
+  document.getElementById('pick-letter').textContent=let_;
+  const ra=document.getElementById('result-pick');
+  ra.classList.remove('visible');void ra.offsetWidth;ra.classList.add('visible');
+}
+
+function rollLetterOnly(t){
+  const l=rndLetter();
+  document.getElementById('ld-'+t).textContent=l;
+  const r=document.getElementById('lr-'+t);
+  r.classList.remove('visible');void r.offsetWidth;r.classList.add('visible');
+}
+
+function openAlpha(t){
+  alphaTarget=t;
+  document.getElementById('alpha-grid').innerHTML=
+    ALPHABET.map(l=>`<button class="alpha-btn" onclick="pickLetter('${l}')">${l}</button>`).join('');
+  document.getElementById('alpha-overlay').classList.add('open');
+}
+function pickLetter(l){
+  closeAlpha();
+  document.getElementById('ld-'+alphaTarget).textContent=l;
+  const r=document.getElementById('lr-'+alphaTarget);
+  r.classList.remove('visible');void r.offsetWidth;r.classList.add('visible');
+}
+function closeAlpha(){document.getElementById('alpha-overlay').classList.remove('open');}
+function closeAlphaOut(e){if(e.target===document.getElementById('alpha-overlay'))closeAlpha();}
+
+function copyResult(id){
+  navigator.clipboard.writeText(document.getElementById(id).textContent)
+    .then(()=>showToast('📋 Kopiert!'));
+}
+function showToast(m){
+  const t=document.getElementById('toast');t.textContent=m;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// ══ TABS ══
+function switchTab(tab){
+  ['random','pick','options'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'':'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('active',i===['random','pick','options'].indexOf(tab));
+  });
+}
+
+// ══ SEARCH ══
+function onSearch(){
+  searchQ=document.getElementById('search-input').value.toLowerCase().trim();
+  buildKatList();
+}
+
+// ══ KAT QUICK-CHIPS ══
+function buildKatChips(){
+  const wrap=document.getElementById('kat-chips');
+  wrap.innerHTML=activeKats().map(k=>{
+    const sc=k.begriffe.filter(b=>sel.has(b)).length;
+    const allS=sc===k.begriffe.length;
+    const partS=sc>0&&!allS;
+    const cls=allS?'all-active':partS?'partial-active':'';
+    const safe=k.name.replace(/'/g,"\\'");
+    return `<button class="kat-chip-btn ${cls}" onclick="toggleKatChip('${safe}')">
+      ${k.emoji} ${k.name}${sc?`<span class="kc-badge">${sc}</span>`:''}
+    </button>`;
+  }).join('');
+}
+
+function toggleKatChip(n){
+  const k=activeKats().find(k=>k.name===n);if(!k)return;
+  const allS=k.begriffe.every(b=>sel.has(b));
+  if(allS)k.begriffe.forEach(b=>sel.delete(b));
+  else k.begriffe.forEach(b=>sel.add(b));
+  buildKatChips();buildKatList();
+}
+
+// ══ ACCORDION ══
+function buildKatList(){
+  const list=document.getElementById('kat-list');
+  const q=searchQ;
+  const kats=activeKats();
+  let html='';
+  kats.forEach((k,ki)=>{
+    const filt=q?k.begriffe.filter(b=>b.toLowerCase().includes(q)||k.name.toLowerCase().includes(q)):k.begriffe;
+    if(!filt.length)return;
+    const sc=filt.filter(b=>sel.has(b)).length;
+    const allS=sc===filt.length;
+    const part=sc>0&&!allS;
+    const isOpen=q!==''||openKats.has(ki);
+    const cbCls=allS?'checked':part?'partial':'';
+    const cbTxt=allS?'✓':part?'–':'';
+    html+=`<div class="kat-card ${sc?'has-sel':''}" id="kc-${ki}">
+      <div class="kat-header" onclick="toggleKatOpen(${ki},event)">
+        <div class="kat-cb ${cbCls}" onclick="toggleKatAll(${ki},event)">${cbTxt}</div>
+        <span class="kat-emoji">${k.emoji}</span>
+        <span class="kat-name">${k.name}</span>
+        ${sc?`<span class="kat-num">${sc}</span>`:''}
+        <span class="kat-meta">${filt.length} Begriffe</span>
+        <span class="kat-chev ${isOpen?'open':''}">▼</span>
+      </div>
+      <div class="kat-body ${isOpen?'open':''}" id="kb-${ki}">
+        <div class="kat-body-ctrl">
+          <button class="kat-body-btn" onclick="selKatAll(${ki},event)">Alle wählen</button>
+          <button class="kat-body-btn" onclick="clrKat(${ki},event)">Alle leeren</button>
+        </div>
+        <div class="begriff-grid">
+          ${filt.map(b=>{const sf=b.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+            return `<button class="begriff-chip ${sel.has(b)?'sel':''}" onclick="toggleBegriff('${sf}')">${b}</button>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  });
+  list.innerHTML=html||'<p style="color:var(--text-muted);text-align:center;padding:22px 0">Keine Treffer</p>';
+  document.getElementById('sel-num').textContent=sel.size;
+}
+
+function toggleKatOpen(ki,e){
+  if(e.target.classList.contains('kat-cb'))return;
+  if(e.target.closest&&e.target.closest('.kat-body'))return;
+  if(openKats.has(ki))openKats.delete(ki);else openKats.add(ki);
+  buildKatList();
+}
+function toggleKatAll(ki,e){
+  e.stopPropagation();
+  const q=searchQ;const k=activeKats()[ki];if(!k)return;
+  const f=q?k.begriffe.filter(b=>b.toLowerCase().includes(q)||k.name.toLowerCase().includes(q)):k.begriffe;
+  const allS=f.every(b=>sel.has(b));
+  if(allS)f.forEach(b=>sel.delete(b));else f.forEach(b=>sel.add(b));
+  buildKatChips();buildKatList();
+}
+function selKatAll(ki,e){
+  e.stopPropagation();
+  const q=searchQ;const k=activeKats()[ki];if(!k)return;
+  const f=q?k.begriffe.filter(b=>b.toLowerCase().includes(q)||k.name.toLowerCase().includes(q)):k.begriffe;
+  f.forEach(b=>sel.add(b));buildKatChips();buildKatList();
+}
+function clrKat(ki,e){
+  e.stopPropagation();
+  const q=searchQ;const k=activeKats()[ki];if(!k)return;
+  const f=q?k.begriffe.filter(b=>b.toLowerCase().includes(q)||k.name.toLowerCase().includes(q)):k.begriffe;
+  f.forEach(b=>sel.delete(b));buildKatChips();buildKatList();
+}
+function toggleBegriff(n){
+  if(sel.has(n))sel.delete(n);else sel.add(n);
+  buildKatChips();buildKatList();
+}
+function selectAllVisible(){
+  const q=searchQ;
+  activeKats().forEach(k=>{
+    const f=q?k.begriffe.filter(b=>b.toLowerCase().includes(q)||k.name.toLowerCase().includes(q)):k.begriffe;
+    f.forEach(b=>sel.add(b));
+  });
+  buildKatChips();buildKatList();
+}
+function clearAllVisible(){
+  const q=searchQ;
+  activeKats().forEach(k=>{
+    const f=q?k.begriffe.filter(b=>b.toLowerCase().includes(q)||k.name.toLowerCase().includes(q)):k.begriffe;
+    f.forEach(b=>sel.delete(b));
+  });
+  buildKatChips();buildKatList();
+}
+
+// ══ OPTIONS ══
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  ['dark','light'].forEach(id=>document.getElementById('theme-'+id).classList.toggle('active',id===t));
+  save();
+}
+function setLayout(l){
+  document.documentElement.setAttribute('data-layout',l);
+  ['cards','minimal','retro'].forEach(id=>document.getElementById('layout-'+id).classList.toggle('active',id===l));
+  save();
+}
+
+function buildOptsKats(){
+  document.getElementById('opts-kats').innerHTML=KATEGORIEN.map(k=>{
+    const excl=exclKats.has(k.name);
+    const sf=k.name.replace(/'/g,"\\'");
+    return `<button class="opts-kat-chip ${excl?'excl':''}" onclick="toggleExclKat('${sf}')">${k.emoji} ${k.name}</button>`;
+  }).join('');
+}
+
+function toggleExclKat(n){
+  if(exclKats.has(n))exclKats.delete(n);
+  else{
+    exclKats.add(n);
+    const k=KATEGORIEN.find(k=>k.name===n);
+    if(k)k.begriffe.forEach(b=>sel.delete(b));
+  }
+  buildOptsKats();buildKatChips();buildKatList();updateStats();save();
+}
+
+function buildOptsExclTerms(){
+  const wrap=document.getElementById('opts-excl-terms');
+  if(!exclTerms.size){wrap.innerHTML='<span class="opts-empty">Noch keine Begriffe ausgeblendet.</span>';return;}
+  wrap.innerHTML=[...exclTerms].map(b=>{
+    const sf=b.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    return `<span class="excl-term-chip">${b}<button onclick="unexclTerm('${sf}')">✕</button></span>`;
+  }).join('');
+}
+function unexclTerm(n){
+  exclTerms.delete(n);
+  buildOptsExclTerms();buildKatChips();buildKatList();updateStats();onOptsSearch();save();
+}
+
+let optsQ='';
+function onOptsSearch(){
+  optsQ=document.getElementById('opts-term-search').value.toLowerCase().trim();
+  buildOptsTermResults();
+}
+function buildOptsTermResults(){
+  const r=document.getElementById('opts-term-results');
+  if(!optsQ){r.innerHTML='';return;}
+  const seen=new Set();const matches=[];
+  KATEGORIEN.forEach(k=>{
+    if(exclKats.has(k.name))return;
+    k.begriffe.forEach(b=>{
+      if(b.toLowerCase().includes(optsQ)&&!seen.has(b)){seen.add(b);matches.push(b);}
+    });
+  });
+  const shown=matches.slice(0,40);
+  r.innerHTML=shown.map(b=>{
+    const sf=b.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    return `<button class="opts-term-chip ${exclTerms.has(b)?'excl':''}" onclick="toggleExclTerm('${sf}')">${b}</button>`;
+  }).join('')||'<span style="color:var(--text-muted);font-size:.75rem;font-weight:600">Kein Treffer</span>';
+}
+function toggleExclTerm(n){
+  if(exclTerms.has(n)){exclTerms.delete(n);}
+  else{exclTerms.add(n);sel.delete(n);}
+  buildOptsExclTerms();buildOptsTermResults();buildKatChips();buildKatList();updateStats();save();
+}
+
+// ══ PERSIST ══
+function save(){
+  try{
+    localStorage.setItem('slvp2_th',document.documentElement.getAttribute('data-theme'));
+    localStorage.setItem('slvp2_ly',document.documentElement.getAttribute('data-layout'));
+    localStorage.setItem('slvp2_ek',JSON.stringify([...exclKats]));
+    localStorage.setItem('slvp2_et',JSON.stringify([...exclTerms]));
+  }catch(e){}
+}
+function load(){
+  try{
+    const th=localStorage.getItem('slvp2_th');
+    const ly=localStorage.getItem('slvp2_ly');
+    const ek=localStorage.getItem('slvp2_ek');
+    const et=localStorage.getItem('slvp2_et');
+    if(th)setTheme(th);
+    if(ly)setLayout(ly);
+    if(ek)JSON.parse(ek).forEach(k=>exclKats.add(k));
+    if(et)JSON.parse(et).forEach(t=>exclTerms.add(t));
+  }catch(e){}
+}
+
+// ══ INIT ══
+load();
+updateStats();
+buildKatChips();
+buildKatList();
+buildOptsKats();
+buildOptsExclTerms();
+</script>
+
+</body>
+</html>
