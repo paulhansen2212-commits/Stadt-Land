@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Stadt Land Vollpfosten 🎲</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Dynamisches Theme-Stylesheet – wird komplett per JS ersetzt -->
+
+<style id="theme-style"></style>
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   STATISCHE STRUKTURSTILE – nutzen nur CSS-Vars aus #theme-style
+═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { height: 100%; }
+
+body {
+  font-family: var(--font-ui, 'Nunito', sans-serif);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+/* Glow-Hintergrund */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, var(--glow1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, var(--glow2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, var(--glow3) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+header, .container { position: relative; z-index: 1; }
+
+header { text-align: center; padding: 28px 20px 14px; }
+header h1 {
+  font-family: var(--font-display, 'Fredoka One', cursive);
+  font-size: clamp(1.8rem, 7vw, 3.1rem);
+  letter-spacing: var(--h1-spacing, 1px);
+  background: linear-gradient(135deg, var(--a1), var(--a2), var(--a3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1.1;
+}
+header p { color: var(--muted); margin-top: 5px; font-size: .85rem; font-weight: 600; }
+
+.container { max-width: 760px; margin: 0 auto; padding: 0 14px 60px; }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex; gap: 5px; margin: 18px 0 16px;
+  background: var(--surf); border-radius: var(--r-tabs, 50px);
+  padding: 5px; border: 1.5px solid var(--bdr);
+}
+.tab {
+  flex: 1; padding: 9px 3px; border: none;
+  border-radius: var(--r-tab, 44px);
+  background: transparent; color: var(--muted);
+  font-family: var(--font-ui, 'Nunito', sans-serif);
+  font-weight: 700; font-size: .79rem; cursor: pointer; transition: all .25s;
+}
+.tab.active {
+  background: linear-gradient(135deg, var(--a1), var(--a4));
+  color: #fff; box-shadow: 0 3px 14px var(--a1-glow);
+}
+
+/* ── Ergebnis ── */
+.result-area { display: none; margin-bottom: 20px; }
+.result-area.visible { display: block; }
+.result-bubble {
+  background: var(--card-bg);
+  border: var(--card-bw, 2px) solid var(--a3-dim);
+  border-radius: var(--r-card, 20px);
+  padding: 20px 18px;
+  box-shadow: var(--shadow), 0 0 36px var(--glow3);
+  animation: popIn .35s cubic-bezier(.175,.885,.32,1.275);
+  position: relative; overflow: hidden; text-align: center;
+}
+.result-bubble::before {
+  content: ''; position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at center, var(--glow3) 0%, transparent 60%);
+  pointer-events: none;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.85) translateY(12px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+.result-label {
+  font-size: .7rem; font-weight: 700; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+}
+.result-pair { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.result-term { font-family: var(--font-display); font-size: clamp(1.4rem, 5vw, 2.4rem); color: var(--a3); line-height: 1.2; }
+.result-letter {
+  display: flex; align-items: center; justify-content: center;
+  width: 68px; height: 68px;
+  border-radius: var(--r-letter, 50%);
+  background: var(--a2-subtle); border: var(--card-bw, 2px) solid var(--a2-dim);
+  font-family: var(--font-display); font-size: 2rem; color: var(--a2); flex-shrink: 0;
+}
+.result-divider { width: 2px; height: 44px; background: var(--bdr); border-radius: 2px; }
+.result-source { font-size: .7rem; color: var(--muted); font-weight: 600; margin-top: 8px; }
+.result-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+.btn-again {
+  background: linear-gradient(135deg, var(--a3), #00a080); color: #0f3460;
+  font-weight: 800; padding: 9px 18px; border: none; border-radius: 50px;
+  font-family: var(--font-ui); font-size: .85rem; cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; gap: 5px;
+}
+.btn-again:hover { transform: translateY(-2px); box-shadow: 0 4px 14px var(--a3-glow); }
+.btn-copy {
+  background: var(--surf); color: var(--muted); padding: 9px 14px;
+  border: 1.5px solid var(--bdr); border-radius: 50px;
+  font-family: var(--font-ui); font-size: .8rem; font-weight: 700;
+  cursor: pointer; transition: all .2s;
+}
+.btn-copy:hover { border-color: var(--a2); color: var(--a2); }
+
+/* ── Generische Buttons ── */
+.btn {
+  padding: 11px 14px; border: none; border-radius: var(--r-btn, 14px);
+  font-family: var(--font-ui); font-weight: 800; font-size: .85rem;
+  cursor: pointer; transition: all .2s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--a1), var(--a4)); color: #fff;
+  box-shadow: var(--btn-shadow);
+}
+.btn-primary:hover { transform: var(--btn-hover-tf); box-shadow: 0 6px 22px var(--a1-glow); }
+.btn-primary:active { transform: var(--btn-active-tf); }
+.btn-ghost { background: var(--surf); color: var(--muted); border: 1.5px solid var(--bdr); }
+.btn-ghost:hover { border-color: var(--bdr-h); color: var(--text); }
+.btn-yellow { background: var(--surf); color: var(--a2); border: 1.5px solid var(--a2-dim); }
+.btn-yellow:hover { background: var(--a2-subtle); }
+
+.stat-line { text-align: center; font-size: .77rem; font-weight: 600; color: var(--muted); margin: 6px 0 4px; }
+.stat-line strong { color: var(--a3); }
+.stat-line b { color: var(--a2); }
+
+/* ── Würfelbereich ── */
+.roll-area {
+  display: flex; flex-direction: var(--roll-dir, column);
+  align-items: center; justify-content: center;
+  padding: 16px 0 8px; gap: 10px;
+}
+.roll-btn {
+  width: var(--roll-w, 160px); height: var(--roll-h, 160px);
+  border-radius: var(--roll-r, 50%);
+  border: var(--roll-border, none);
+  background: var(--roll-bg);
+  color: var(--roll-color, #fff);
+  font-family: var(--font-display);
+  font-size: var(--roll-fs, 1.05rem);
+  cursor: pointer;
+  box-shadow: var(--roll-shadow);
+  animation: var(--roll-anim, rollanim 2.5s infinite);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: var(--roll-gap, 6px);
+  max-width: var(--roll-maxw, none);
+  transition: transform .2s, box-shadow .15s;
+}
+.roll-btn .dice { font-size: var(--roll-icon, 2.3rem); }
+.roll-btn:hover  { transform: var(--roll-hover,  scale(1.05)); }
+.roll-btn:active { transform: var(--roll-active, scale(.96)); animation: none; }
+
+@keyframes rollanim {
+  0%,100% { box-shadow: 0 8px 32px var(--a1-glow), 0 0 0 0 var(--a1-pulse); }
+  50%      { box-shadow: 0 8px 32px var(--a1-glow), 0 0 0 16px transparent; }
+}
+.spinning { animation: spin .4s ease-out !important; }
+@keyframes spin {
+  0%   { transform: rotate(0)     scale(1); }
+  50%  { transform: rotate(180deg) scale(1.15); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* ── Auswählen-Tab ── */
+.sel-count { text-align: center; font-size: .78rem; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+.sel-count span { color: var(--a3); font-size: .92rem; }
+.action-row { display: flex; gap: 7px; margin-bottom: 16px; flex-wrap: wrap; }
+.action-row .btn { flex: 1; min-width: 100px; }
+
+/* Kategorie-Chips */
+.kat-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+.kat-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 13px; border-radius: 50px;
+  border: 1.5px solid var(--bdr); background: var(--surf); color: var(--muted);
+  font-family: var(--font-ui); font-weight: 800; font-size: .77rem;
+  cursor: pointer; transition: all .17s; white-space: nowrap;
+}
+.kat-chip:hover { border-color: var(--bdr-h); color: var(--text); }
+.kat-chip.full    { border-color: var(--a3); background: var(--a3-subtle); color: var(--a3); }
+.kat-chip.partial { border-color: var(--a3-dim); background: var(--a3-subtle); color: var(--a3); }
+.kc-num { background: var(--a3-subtle); color: var(--a3); border-radius: 50px; padding: 1px 6px; font-size: .68rem; }
+
+/* Suche */
+.search-row { margin-bottom: 12px; position: relative; }
+.search-input {
+  width: 100%; padding: 10px 13px 10px 36px; border-radius: 50px;
+  border: 1.5px solid var(--bdr); background: var(--inp); color: var(--text);
+  font-family: var(--font-ui); font-weight: 600; font-size: .84rem;
+  outline: none; transition: border-color .2s;
+}
+.search-input:focus { border-color: var(--a3-dim); }
+.s-ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: .9rem; pointer-events: none; }
+
+/* Akkordeon */
+.kat-card {
+  background: var(--surf); border: 1.5px solid var(--bdr);
+  border-radius: var(--r-card, 16px); margin-bottom: 8px; overflow: hidden;
+  transition: border-color .2s;
+}
+.kat-card.has-sel { border-color: var(--a3-dim); }
+.kat-head {
+  display: flex; align-items: center; gap: 8px; padding: 11px 13px;
+  cursor: pointer; user-select: none; transition: background .15s;
+}
+.kat-head:hover { background: var(--hover); }
+.kat-cb {
+  width: 20px; height: 20px; border-radius: 5px;
+  border: 1.5px solid var(--bdr-h); background: transparent;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: .77rem; cursor: pointer; transition: all .13s;
+}
+.kat-cb.on  { background: var(--a3); border-color: var(--a3); color: #0f3460; }
+.kat-cb.mix { background: var(--a3-subtle); border-color: var(--a3); color: var(--a3); }
+.kat-ico  { font-size: 1.05rem; flex-shrink: 0; }
+.kat-lbl  { font-family: var(--font-display); font-size: .94rem; color: var(--text); flex: 1; }
+.kat-num  { background: var(--a3-subtle); color: var(--a3); border-radius: 50px; padding: 1px 7px; font-size: .68rem; font-weight: 800; }
+.kat-meta { font-size: .68rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.kat-chev { color: var(--muted); font-size: .72rem; transition: transform .25s; flex-shrink: 0; }
+.kat-chev.open { transform: rotate(180deg); }
+.kat-body { display: none; padding: 0 12px 12px; }
+.kat-body.open { display: block; }
+.kat-ctrl { display: flex; gap: 6px; margin-bottom: 8px; }
+.kat-ctrl-btn {
+  padding: 4px 10px; border-radius: 50px; border: 1.5px solid var(--bdr);
+  background: transparent; color: var(--muted);
+  font-family: var(--font-ui); font-weight: 700; font-size: .69rem;
+  cursor: pointer; transition: all .13s;
+}
+.kat-ctrl-btn:hover { border-color: var(--a2); color: var(--a2); }
+.term-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.term-chip {
+  padding: 4px 11px; border-radius: 50px; border: 1.5px solid var(--bdr);
+  background: var(--chip); color: var(--muted);
+  font-family: var(--font-ui); font-weight: 700; font-size: .72rem;
+  cursor: pointer; transition: all .13s; white-space: nowrap;
+}
+.term-chip:hover { border-color: var(--bdr-h); color: var(--text); }
+.term-chip.on { border-color: var(--a3); background: var(--a3-subtle); color: var(--a3); }
+
+/* ── Buchstabenbereich ── */
+.letter-sec { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--bdr); }
+.letter-title {
+  text-align: center; font-size: .7rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+}
+.letter-row { display: flex; gap: 11px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.l-roll-btn {
+  width: 96px; height: 96px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, var(--a2), #e07b00); color: #fff;
+  font-family: var(--font-display); font-size: .88rem; cursor: pointer;
+  box-shadow: 0 5px 18px var(--a2-glow); transition: all .2s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0;
+}
+.l-roll-btn .ldi { font-size: 1.65rem; }
+.l-roll-btn:hover { transform: scale(1.07); }
+.l-roll-btn:active { transform: scale(.94); }
+.l-pick-btn {
+  width: 96px; height: 96px; border-radius: 50%;
+  border: 2px solid var(--a2-dim); background: var(--a2-subtle); color: var(--a2);
+  font-family: var(--font-display); font-size: .88rem; cursor: pointer; transition: all .2s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0;
+}
+.l-pick-btn .lpi { font-size: 1.65rem; }
+.l-pick-btn:hover { background: var(--a2-subtle); border-color: var(--a2); transform: scale(1.07); }
+.l-pick-btn:active { transform: scale(.94); }
+.l-result { display: none; text-align: center; margin-top: 14px; animation: popIn .3s cubic-bezier(.175,.885,.32,1.275); }
+.l-result.visible { display: block; }
+.l-bubble {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--a2-subtle); border: 2px solid var(--a2-dim);
+  border-radius: var(--r-lbubble, 16px); padding: 14px 30px;
+  box-shadow: 0 3px 18px var(--a2-glow);
+}
+.l-big  { font-family: var(--font-display); font-size: clamp(2.4rem,11vw,4rem); color: var(--a2); line-height: 1; }
+.l-sub  { font-size: .7rem; font-weight: 700; color: var(--muted); letter-spacing: 1px; }
+
+/* Alpha-Overlay */
+.alpha-ov {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.72); z-index: 300;
+  align-items: flex-end; justify-content: center; backdrop-filter: blur(4px);
+}
+.alpha-ov.open { display: flex; }
+.alpha-sheet {
+  background: var(--surf); border-radius: 22px 22px 0 0;
+  padding: 17px 13px 30px; width: 100%; max-width: 480px;
+  animation: slideUp .27s cubic-bezier(.25,.46,.45,.94);
+  border-top: 2px solid var(--bdr);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.alpha-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.alpha-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--a2); }
+.alpha-close { background: none; border: none; color: var(--muted); font-size: 1.25rem; cursor: pointer; padding: 3px 7px; line-height: 1; }
+.alpha-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 6px; }
+.alpha-btn {
+  aspect-ratio: 1; border: 1.5px solid var(--a2-dim); border-radius: 9px;
+  background: var(--a2-subtle); color: var(--text);
+  font-family: var(--font-display); font-size: 1.05rem; cursor: pointer; transition: all .13s;
+  display: flex; align-items: center; justify-content: center;
+}
+.alpha-btn:hover, .alpha-btn:active { background: var(--a2); color: #1a1a2e; border-color: var(--a2); transform: scale(1.1); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--a3); color: #0f3460;
+  font-weight: 800; padding: 10px 20px; border-radius: 50px;
+  font-size: .8rem; transition: transform .3s; z-index: 999; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Optionen ── */
+.opts-sec { margin-bottom: 22px; }
+.opts-title { font-family: var(--font-display); font-size: 1rem; color: var(--a2); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
+.divider { height: 1px; background: var(--bdr); margin: 18px 0; }
+.tgl-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+.tgl-btn {
+  flex: 1; min-width: 90px; padding: 10px 12px;
+  border-radius: var(--r-btn, 12px); border: 1.5px solid var(--bdr);
+  background: var(--surf); color: var(--muted);
+  font-family: var(--font-ui); font-weight: 700; font-size: .8rem;
+  cursor: pointer; transition: all .17s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.tgl-btn .ti { font-size: 1.3rem; }
+.tgl-btn:hover { border-color: var(--bdr-h); color: var(--text); }
+.tgl-btn.on { border-color: var(--a4); background: var(--a4-subtle); color: var(--a4); }
+
+.excl-kat-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.excl-kat-chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 50px;
+  border: 1.5px solid var(--bdr); background: var(--surf); color: var(--text);
+  font-family: var(--font-ui); font-weight: 700; font-size: .75rem; cursor: pointer; transition: all .15s;
+}
+.excl-kat-chip:hover { border-color: var(--bdr-h); }
+.excl-kat-chip.off { border-color: var(--a1); background: var(--a1-subtle); color: var(--a1); text-decoration: line-through; opacity: .75; }
+
+.excl-terms-box {
+  display: flex; flex-wrap: wrap; gap: 5px; min-height: 36px; padding: 9px;
+  background: var(--inp); border: 1.5px dashed var(--bdr); border-radius: 11px; margin-bottom: 9px;
+  align-items: flex-start; align-content: flex-start;
+}
+.excl-term-chip {
+  background: var(--a1-subtle); border: 1.5px solid var(--a1-dim); color: var(--a1);
+  padding: 3px 9px; border-radius: 50px; font-size: .71rem; font-weight: 700;
+  display: flex; align-items: center; gap: 4px;
+}
+.excl-term-chip button { background: none; border: none; color: var(--a1-dim); cursor: pointer; font-size: .8rem; padding: 0; line-height: 1; transition: color .13s; }
+.excl-term-chip button:hover { color: var(--a1); }
+.muted-text { color: var(--muted); font-size: .77rem; font-weight: 600; font-style: italic; }
+.opts-search-wrap { position: relative; margin-bottom: 7px; }
+.opts-search {
+  width: 100%; padding: 8px 12px 8px 34px; border-radius: 50px;
+  border: 1.5px solid var(--bdr); background: var(--inp); color: var(--text);
+  font-family: var(--font-ui); font-weight: 600; font-size: .81rem; outline: none; transition: border-color .2s;
+}
+.opts-search:focus { border-color: var(--a1-dim); }
+.opts-term-results { display: flex; flex-wrap: wrap; gap: 5px; max-height: 150px; overflow-y: auto; padding: 3px 0; }
+.opts-term-chip {
+  padding: 4px 10px; border-radius: 50px; border: 1.5px solid var(--bdr);
+  background: var(--surf); color: var(--muted);
+  font-family: var(--font-ui); font-weight: 700; font-size: .71rem; cursor: pointer; transition: all .13s;
+}
+.opts-term-chip:hover { border-color: var(--a1); color: var(--a1); }
+.opts-term-chip.off { border-color: var(--a1); background: var(--a1-subtle); color: var(--a1); text-decoration: line-through; opacity: .6; }
+.info-box {
+  font-size: .73rem; color: var(--muted); font-weight: 600; padding: 9px 12px; border-radius: 9px;
+  background: var(--a3-subtle); border: 1px solid var(--a3-dim); margin-top: 9px;
+}
+.opts-sub { font-size: .76rem; color: var(--muted); font-weight: 600; margin-bottom: 10px; }
+
+@media(max-width: 400px) {
+  .action-row, .tgl-grid { flex-direction: column; }
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>🎲 Stadt Land<br>Vollpfosten</h1>
+  <p>Begriff &amp; Buchstabe in einem Wurf</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('r')">🎲 Zufällig</button>
+    <button class="tab" onclick="switchTab('p')">✅ Auswählen</button>
+    <button class="tab" onclick="switchTab('o')">⚙️ Optionen</button>
+  </div>
+
+  <!-- TAB: ZUFÄLLIG -->
+
+  <div id="tab-r">
+    <div id="res-r" class="result-area">
+      <div class="result-bubble">
+        <div class="result-label">Dein Wurf</div>
+        <div class="result-pair">
+          <div class="result-term" id="r-term"></div>
+          <div class="result-divider"></div>
+          <div class="result-letter" id="r-letter">?</div>
+        </div>
+        <div class="result-source" id="r-src"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-again" onclick="rollRnd()"><span id="dice-ico">🎲</span> Nochmal!</button>
+        <button class="btn-copy" onclick="cp('r-term')">📋 Kopieren</button>
+      </div>
+    </div>
+    <div class="roll-area">
+      <button class="roll-btn" onclick="rollRnd()">
+        <span class="dice">🎲</span>Würfeln!
+      </button>
+    </div>
+    <div class="stat-line">Aus <strong id="stat-n">0</strong> Begriffen in <b id="stat-k">0</b> Kategorien</div>
+    <div class="letter-sec">
+      <div class="letter-title">🔤 Nur Buchstabe würfeln</div>
+      <div class="letter-row">
+        <button class="l-roll-btn" onclick="rollL('r')"><span class="ldi">🎲</span>Zufall</button>
+        <button class="l-pick-btn" onclick="openAl('r')"><span class="lpi">⚡</span>Wählen</button>
+      </div>
+      <div class="l-result" id="lr-r">
+        <div class="l-bubble"><div class="l-big" id="ld-r">A</div><div class="l-sub">Euer Buchstabe</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: AUSWÄHLEN -->
+
+  <div id="tab-p" style="display:none">
+    <div id="res-p" class="result-area">
+      <div class="result-bubble">
+        <div class="result-label">Dein Wurf</div>
+        <div class="result-pair">
+          <div class="result-term" id="p-term"></div>
+          <div class="result-divider"></div>
+          <div class="result-letter" id="p-letter">?</div>
+        </div>
+        <div class="result-source" id="p-src"></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-again" onclick="rollPick()"><span>🎲</span> Nochmal!</button>
+        <button class="btn-copy" onclick="cp('p-term')">📋 Kopieren</button>
+      </div>
+    </div>
+    <div class="sel-count"><span id="sel-n">0</span> Begriffe ausgewählt</div>
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="rollPick()">🎲 Würfeln</button>
+      <button class="btn btn-yellow" onclick="selAll()">☑ Alle</button>
+      <button class="btn btn-ghost" onclick="clrAll()">✕ Leeren</button>
+    </div>
+    <div class="kat-chips" id="kat-chips"></div>
+    <div class="search-row">
+      <span class="s-ico">🔍</span>
+      <input class="search-input" type="text" placeholder="Kategorien oder Begriffe suchen…" id="search-in" oninput="onSrch()">
+    </div>
+    <div id="kat-list"></div>
+    <div class="letter-sec">
+      <div class="letter-title">🔤 Nur Buchstabe würfeln</div>
+      <div class="letter-row">
+        <button class="l-roll-btn" onclick="rollL('p')"><span class="ldi">🎲</span>Zufall</button>
+        <button class="l-pick-btn" onclick="openAl('p')"><span class="lpi">⚡</span>Wählen</button>
+      </div>
+      <div class="l-result" id="lr-p">
+        <div class="l-bubble"><div class="l-big" id="ld-p">A</div><div class="l-sub">Euer Buchstabe</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: OPTIONEN -->
+
+  <div id="tab-o" style="display:none">
+    <div class="opts-sec">
+      <div class="opts-title">🎨 Erscheinungsbild</div>
+      <div class="tgl-grid">
+        <button class="tgl-btn" id="bt-dark"  onclick="setTheme('dark')"><span class="ti">🌙</span>Dunkel</button>
+        <button class="tgl-btn" id="bt-light" onclick="setTheme('light')"><span class="ti">☀️</span>Hell</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="opts-sec">
+      <div class="opts-title">📐 Layout</div>
+      <div class="tgl-grid">
+        <button class="tgl-btn" id="bl-cards"   onclick="setLayout('cards')"><span class="ti">🎡</span>Klassisch</button>
+        <button class="tgl-btn" id="bl-minimal" onclick="setLayout('minimal')"><span class="ti">⬛</span>Minimal</button>
+        <button class="tgl-btn" id="bl-retro"   onclick="setLayout('retro')"><span class="ti">👾</span>Retro</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="opts-sec">
+      <div class="opts-title">🚫 Kategorien ausblenden</div>
+      <p class="opts-sub">Tippe auf eine Kategorie um sie auszublenden.</p>
+      <div class="excl-kat-grid" id="excl-kats"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="opts-sec">
+      <div class="opts-title">🔇 Einzelne Begriffe ausblenden</div>
+      <div class="excl-terms-box" id="excl-terms-box"><span class="muted-text">Noch keine Begriffe ausgeblendet.</span></div>
+      <div class="opts-search-wrap">
+        <span class="s-ico" style="font-size:.83rem">🔍</span>
+        <input class="opts-search" type="text" placeholder="Begriff suchen…" id="opts-srch" oninput="onOptSrch()">
+      </div>
+      <div class="opts-term-results" id="opts-results"></div>
+      <div class="info-box" style="margin-top:10px">💡 Alle Einstellungen werden automatisch im Browser gespeichert.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="alpha-ov" id="alpha-ov" onclick="closeAlOv(event)">
+  <div class="alpha-sheet">
+    <div class="alpha-head">
+      <span class="alpha-title">⚡ Buchstabe wählen</span>
+      <button class="alpha-close" onclick="closeAl()">✕</button>
+    </div>
+    <div class="alpha-grid" id="alpha-grid"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════
+//  THEME ENGINE
+//  Schreibt ein komplettes <style>-Element neu.
+//  Keine CSS-var-Referenzen in JS-Strings → funktioniert überall.
+// ══════════════════════════════════════════════════════════════
+
+const THEMES = {
+  dark: {
+    bg:'#1a1a2e', surf:'#16213e', inp:'#0f1a30',
+    card:'linear-gradient(135deg,#0f3460,#1a2a50)',
+    text:'#f0f0f0', muted:'#9ca3af',
+    bdr:'rgba(255,255,255,0.09)', bdrH:'rgba(255,255,255,0.22)',
+    shadow:'0 8px 32px rgba(0,0,0,0.4)',
+    chip:'rgba(255,255,255,0.04)', hover:'rgba(255,255,255,0.03)',
+    glow1:'rgba(233,69,96,0.12)', glow2:'rgba(168,85,247,0.12)', glow3:'rgba(0,212,170,0.06)',
+  },
+  light: {
+    bg:'#f0f4ff', surf:'#ffffff', inp:'#f5f7ff',
+    card:'linear-gradient(135deg,#e8eeff,#f0fff9)',
+    text:'#1a1a2e', muted:'#6b7280',
+    bdr:'rgba(0,0,0,0.09)', bdrH:'rgba(0,0,0,0.25)',
+    shadow:'0 4px 24px rgba(0,0,0,0.10)',
+    chip:'rgba(0,0,0,0.03)', hover:'rgba(0,0,0,0.03)',
+    glow1:'rgba(233,69,96,0.06)', glow2:'rgba(168,85,247,0.06)', glow3:'rgba(0,212,170,0.04)',
+  }
+};
+
+const LAYOUTS = {
+  cards: {
+    a1:'#e94560', a2:'#f5a623', a3:'#00d4aa', a4:'#a855f7',
+    fontD:"'Fredoka One',cursive", fontU:"'Nunito',sans-serif",
+    rTabs:'50px', rTab:'44px', rCard:'16px', rBtn:'14px',
+    rLetter:'50%', rLbubble:'16px', cardBw:'2px', h1spacing:'1px',
+    rollW:'160px', rollH:'160px', rollR:'50%', rollBorder:'none',
+    rollColorFn: (t)=>'#fff',
+    rollBgFn: (a)=>`linear-gradient(135deg,${a.a1},${a.a4})`,
+    rollFs:'1.05rem', rollIcon:'2.3rem', rollGap:'6px',
+    rollAnim:'rollanim 2.5s infinite',
+    rollHover:'scale(1.05)', rollActive:'scale(.96)',
+    rollDir:'column', rollMaxw:'none',
+    rollShadowFn: (a)=>`0 8px 32px ${a.a1}88`,
+    btnShadowFn: (a)=>`0 4px 18px ${a.a1}88`,
+    btnHover:'translateY(-2px)', btnActive:'scale(.97)',
+  },
+  minimal: {
+    a1:'#e94560', a2:'#f5a623', a3:'#00d4aa', a4:'#a855f7',
+    fontD:"'Fredoka One',cursive", fontU:"'Nunito',sans-serif",
+    rTabs:'8px', rTab:'5px', rCard:'8px', rBtn:'8px',
+    rLetter:'14px', rLbubble:'10px', cardBw:'1.5px', h1spacing:'0px',
+    rollW:'100%', rollH:'62px', rollR:'50px', rollBorder:'none',
+    rollColorFn: ()=>'#fff',
+    rollBgFn: (a)=>`linear-gradient(90deg,${a.a1},${a.a4})`,
+    rollFs:'1.15rem', rollIcon:'1.4rem', rollGap:'10px',
+    rollAnim:'none',
+    rollHover:'translateY(-2px)', rollActive:'scale(.98)',
+    rollDir:'row', rollMaxw:'420px',
+    rollShadowFn: (a)=>`0 4px 20px ${a.a1}88`,
+    btnShadowFn: (a)=>`0 3px 12px ${a.a1}88`,
+    btnHover:'translateY(-2px)', btnActive:'scale(.98)',
+  },
+  retro: {
+    a1:'#ff4500', a2:'#ffd700', a3:'#00ff88', a4:'#ff00bb',
+    fontD:"'Fredoka One',cursive", fontU:"'Fredoka One',cursive",
+    rTabs:'4px', rTab:'3px', rCard:'4px', rBtn:'4px',
+    rLetter:'8px', rLbubble:'6px', cardBw:'3px', h1spacing:'4px',
+    rollW:'150px', rollH:'150px', rollR:'16px', rollBorder:'4px solid #ffd700',
+    rollColorFn: ()=>'#ffd700',
+    rollBgFn: (_, surf)=>surf,
+    rollFs:'1.05rem', rollIcon:'2.5rem', rollGap:'5px',
+    rollAnim:'none',
+    rollHover:'translate(-2px,-2px)', rollActive:'translate(4px,4px)',
+    rollDir:'column', rollMaxw:'none',
+    rollShadowFn: ()=>'5px 5px 0 #ff4500',
+    btnShadowFn: ()=>'3px 3px 0 rgba(0,0,0,0.3)',
+    btnHover:'translate(-2px,-2px)', btnActive:'translate(2px,2px)',
+  }
+};
+
+function hex2rgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function buildCSS(theme, layout) {
+  const t = THEMES[theme];
+  const l = LAYOUTS[layout];
+  const rollBg  = l.rollBgFn(l, t.surf);
+  const rollClr = l.rollColorFn(l);
+  const rollSha = l.rollShadowFn(l);
+  const btnSha  = l.btnShadowFn(l);
+
+  return `:root {
+  /* Theme */
+  --bg:${t.bg};--surf:${t.surf};--inp:${t.inp};
+  --card-bg:${t.card};--text:${t.text};--muted:${t.muted};
+  --bdr:${t.bdr};--bdr-h:${t.bdrH};--shadow:${t.shadow};
+  --chip:${t.chip};--hover:${t.hover};
+  --glow1:${t.glow1};--glow2:${t.glow2};--glow3:${t.glow3};
+
+  /* Akzente */
+  --a1:${l.a1};--a2:${l.a2};--a3:${l.a3};--a4:${l.a4};
+  --a1-glow:${l.a1}88;--a1-pulse:${l.a1}44;--a1-dim:${l.a1}88;--a1-subtle:${l.a1}1a;
+  --a2-glow:${l.a2}77;--a2-dim:${l.a2}77;--a2-subtle:${l.a2}20;
+  --a3-glow:${l.a3}77;--a3-dim:${l.a3}66;--a3-subtle:${l.a3}1a;
+  --a4-dim:${l.a4}66;--a4-subtle:${l.a4}1a;
+
+  /* Layout */
+  --font-display:${l.fontD};--font-ui:${l.fontU};
+  --r-tabs:${l.rTabs};--r-tab:${l.rTab};--r-card:${l.rCard};--r-btn:${l.rBtn};
+  --r-letter:${l.rLetter};--r-lbubble:${l.rLbubble};
+  --card-bw:${l.cardBw};--h1-spacing:${l.h1spacing};
+
+  /* Würfel-Button */
+  --roll-w:${l.rollW};--roll-h:${l.rollH};--roll-r:${l.rollR};
+  --roll-border:${l.rollBorder};--roll-bg:${rollBg};
+  --roll-color:${rollClr};--roll-fs:${l.rollFs};--roll-icon:${l.rollIcon};
+  --roll-gap:${l.rollGap};--roll-anim:${l.rollAnim};
+  --roll-hover:${l.rollHover};--roll-active:${l.rollActive};
+  --roll-dir:${l.rollDir};--roll-maxw:${l.rollMaxw};--roll-shadow:${rollSha};
+
+  /* Buttons */
+  --btn-shadow:${btnSha};--btn-hover-tf:${l.btnHover};--btn-active-tf:${l.btnActive};
+}`;
+}
+
+let curTheme  = 'dark';
+let curLayout = 'cards';
+
+function applyStyle() {
+  document.getElementById('theme-style').textContent = buildCSS(curTheme, curLayout);
+}
+
+function setTheme(t) {
+  curTheme = t;
+  applyStyle();
+  ['dark','light'].forEach(id => document.getElementById('bt-'+id).classList.toggle('on', id === t));
+  save();
+}
+
+function setLayout(l) {
+  curLayout = l;
+  applyStyle();
+  ['cards','minimal','retro'].forEach(id => document.getElementById('bl-'+id).classList.toggle('on', id === l));
+  save();
+}
+
+// ══ DATEN ══
+// Kategorien sauber sortiert nach echtem Spielcharakter:
+// Klassiker, Allgemeinwissen, Seriös Kreativ, Seriös Lustig,
+// Erwachsene (ab 16), Essen, Natur, Pop/Medien, Reise/Geo,
+// Saison-Special (Sommer/Winter/Weihnachten/Party)
+const KATEGORIEN = [
+  {
+    name:"Klassiker",emoji:"🏛",
+    begriffe:[
+      "Stadt","Land","Fluss","Name","Tier","Beruf","Pflanze",
+      "Gewässer","Berg","Insel","Hauptstadt","Kontinent","Sprache"
+    ]
+  },
+  {
+    name:"Allgemeinwissen",emoji:"🧠",
+    begriffe:[
+      "Historische Person","Berühmter Wissenschaftler","Erfindung",
+      "Chemisches Element","Dinosaurier","Ausgestorbenes Tier","Planet",
+      "Gebirge","Hauptstadt","Mineral / Stein","Bauwerk der Geschichte",
+      "Literaturklassiker","Buchtitel","Automarke","Flugzeugtyp"
+    ]
+  },
+  {
+    name:"Seriös",emoji:"😇",
+    begriffe:[
+      "Adjektiv","App","Aus dem Garten","Autor",
+      "Das ist ekelhaft","Das ist süß",
+      "Dinge die man am PC macht","Dinge die man jeden Tag macht",
+      "Ein Wort auf Englisch","Eissorte","Elektrisches Gerät",
+      "Emotion / Gefühl","Etwas Eckiges","Etwas Rundes","Farbe",
+      "Film- / Serientitel","Frauenname","Gegenstand","Gemüse","Getränk",
+      "Grund zur Freude","Grund zum Weinen","Hobby","Ich mag…",
+      "Im Kinderzimmer","Im Restaurant","Insekt",
+      "Ist gesund","Kann wachsen","Kindheitsheld","Kleidungsstück",
+      "Körperteil","Kündigungsgrund","Land","Luxusgegenstand","Männername",
+      "Marke","Meerestier","Mit einem Löffel kann ich…","Möbelstück",
+      "Musiker","Musikinstrument","Musiktitel / Song","Obst","Pflanze",
+      "Pizzabelag","Puh! Das stinkt.","Schauspieler","Schul- / Studienfach",
+      "Speise","Sportart","Sportler","Stadt","Süßigkeit","Superheld",
+      "Transportmittel","Tier","Tier schwerer als 25kg",
+      "Typisch Jungs","Typisch Mädchen","Urlaubsziel",
+      "Versteck","Vogelart","Wort mit doppeltem Buchstaben"
+    ]
+  },
+  {
+    name:"Erwachsene 🔞",emoji:"😈",
+    begriffe:[
+      "Alkoholisches Getränk","Allergie","Anderes Wort für Geld",
+      "Angst vor","Ausrede für eine Verspätung","Beim Arzt",
+      "Das ist sexy","Das nervt so richtig!","Das tut weh!",
+      "Etwas das man schlägt","Fetisch","Flirtspruch",
+      "Frauenname","Geschenk für Freund / Freundin",
+      "Grund für Untreue","Grund für einen Seitensprung",
+      "Grund zum Feiern","Ich bin ja ganz lieb aber…",
+      "Im Badezimmer","Im Schlafzimmer",
+      "Kauf nach einem Lottogewinn","Kompliment",
+      "Körperteil","Kosename für Frauen","Kosename für Männer",
+      "Krankheit","Kündigungsgrund","Laster","Leichenversteck",
+      "Luxusgegenstand","Männername","Mordmotiv","Mordwaffe",
+      "Nervige Person","Nimmt man in den Mund",
+      "Ort fürs 1. Date","Peinlicher Moment",
+      "Promi","Scheidungsgrund","Schimpfwort",
+      "Schlechte Angewohnheit","Schlechter Ort fürs 1. Date",
+      "Schul- / Studienfach","Snack","Sportart","Straftat",
+      "Sucht","Trennungsgrund",
+      "Typisch Deutsch","Typisch Frau","Typisch Mann",
+      "Verbrechen","Worte die eine Freundschaft ruinieren","Ziemlich unsexy"
+    ]
+  },
+  {
+    name:"Essen & Trinken",emoji:"🍕",
+    begriffe:[
+      "Alkoholisches Getränk","Alkoholfreies Getränk","Biermarke",
+      "Brotsorte","Cocktail","Dessert","Eissorte","Frühstücksidee",
+      "Gemüse","Getränk","Gewürz","Grillgut","Italienisches Gericht",
+      "Kaffeespezialität","Käsesorte","Kräuter","Küchengerät",
+      "Nudelgericht","Obst","Partysnack","Pizzabelag",
+      "Restaurantkette","Saucenart","Schokoriegel","Snack","Speise",
+      "Streetfood","Süßigkeit","Teesorte"
+    ]
+  },
+  {
+    name:"Natur & Wissen",emoji:"🌿",
+    begriffe:[
+      "Amphibie","Ausgestorbenes Tier","Baum","Blume","Chemisches Element",
+      "Dinosaurier","Fischsorte","Fluss","Gebirge","Insekt",
+      "Jahreszeit","Kontinent","Meerestier","Mineral / Stein",
+      "Naturphänomen","Pflanze","Pilzart","Planet","Reptil","See",
+      "Tier","Vogelart","Wetterereignis"
+    ]
+  },
+  {
+    name:"Popkultur",emoji:"🎬",
+    begriffe:[
+      "Album","Animationsfilm","Comic","Comicfigur","Disney-Figur",
+      "Film","Filmregisseur","Filmzitat","Literaturklassiker",
+      "Manga / Anime","Meme","Moderator","Musikband","Oscar-Film",
+      "Podcast","Realityshow","Serie","Serienfigur","Song",
+      "Solokünstler / Sängerin","Sportverein","Superheld",
+      "Talkshow","TikToker","Videospiel","Weltrekord","Youtuber"
+    ]
+  },
+  {
+    name:"Reise & Geo",emoji:"✈️",
+    begriffe:[
+      "Airline","Berühmter Strand","Fernwehziel","Flughafen",
+      "Gebirge","Hauptstadt","Hotelkette","Insel","Kontinent",
+      "Kulinarische Spezialität","Landessprache","Luxusreiseziel",
+      "Nationalpark","Rucksackreiseziel","Sehenswürdigkeit",
+      "Touristenfalle","Urlaubsland","Währung","Weltwunder","Wüste"
+    ]
+  },
+  {
+    name:"Arbeit & Alltag",emoji:"💼",
+    begriffe:[
+      "Am Telefon","Auf dem Schreibtisch","Auf Instagram",
+      "Ausrede für Zuspätkommen","Berufskleidung","Bewerbungsfloskeln",
+      "Büromaterial","Chefspruch","Dinge die man verliert",
+      "Etwas das immer kaputt geht","Fachrichtung / Studiengang",
+      "Gehaltserhöhungsausrede","Geschenkidee","Grund für Krankmeldung",
+      "Haustier","Homeoffice-Problem","Hunderasse","Im Auto",
+      "Im Büro","Im Fitnessstudio","Im Kühlschrank","Im Meeting",
+      "Im Supermarkt","Im Wartezimmer","Jugendwort","Karrierekiller",
+      "Meetingbegriff / Buzzword","Nervige Nachbarn machen…",
+      "Nerviger Kollege macht…","Startup-Idee","Typische Ausrede","Unternehmen / Firma"
+    ]
+  },
+  {
+    name:"Beziehung",emoji:"💕",
+    begriffe:[
+      "Eifersucht wegen…","Flirtspruch","Hochzeitskatastrophe",
+      "Hochzeitsort","Kennengelernt bei…","Kompliment","Kosename",
+      "Liebesfilm","Liebeszeichen","Ort fürs 1. Date",
+      "Romantische Geste","Scheidungsgrund","Schlechter Ort fürs 1. Date",
+      "Trennungsgrund","Typisch Single","Typisch verliebt",
+      "Verlieben durch…","Versöhnungsgeschenk","Was nervt in einer Beziehung"
+    ]
+  },
+  {
+    name:"Sport",emoji:"⚽",
+    begriffe:[
+      "E-Sport-Spiel","Extremsportart","Individualsport",
+      "Kampfsportart","Mannschaftssport","Olympische Disziplin",
+      "Sportart","Sportausrüstung","Sportgetränk","Sportlegende",
+      "Sportler / Athletin","Sportstadion","Sportverein / Fußballklub",
+      "Sportverletzung","Tanzsportart","Trainingsübung",
+      "Wassersportart","Wintersportart"
+    ]
+  },
+  {
+    name:"Party",emoji:"🎉",
+    begriffe:[
+      "Betrunkener Satz","Dinge über die Frauen lästern",
+      "Dinge über die Männer lästern","Grund für den Weltuntergang",
+      "Grund fürs Zuspätkommen","Grund zum Feiern","Kater-Heilmittel",
+      "Kosename","Peinliches Partyfoto","Partyspiel","Partytrick",
+      "Scheidungsgrund","Schimpfwort","Verrücktes Hobby","Verbrechen",
+      "Was man auf einer Party nicht sagen sollte"
+    ]
+  },
+  {
+    name:"Sommer",emoji:"☀️",
+    begriffe:[
+      "Am Flughafen","Am Strand","An der Hotelbar","Auf Mallorca",
+      "Auf einer Safari","Bikinifarbe","Brotbelag für eine Wanderung",
+      "Da würde ich niemals Urlaub machen","Das nervt im Urlaub",
+      "Eissorte","Erste Tat im Urlaub","Fehlkauf im Urlaub",
+      "Im Dschungel","Im Flugzeug","Im Hotelzimmer","Im Pool",
+      "Insel","Kann ich beim Tauchen sehen","Mache ich am Strand",
+      "Passt in einen Koffer","Peinlich am Strand","Peinlich im Hotel",
+      "Schmeckt nach Sommer","Sehenswürdigkeit","Sommergetränk",
+      "Souvenir","Strandaccessoire","Tier das zu Hause bleibt",
+      "Typisch Tourist","Urlaubsland","Urlaubslektüre"
+    ]
+  },
+  {
+    name:"Weihnachten",emoji:"🎄",
+    begriffe:[
+      "Adventskalenderfüllung","An Heiligabend","Auf dem Wunschzettel",
+      "Auf der Weihnachtsfeier","Backzutat","Bei der Oma",
+      "Bei der Schwiegermutter","Beim Schrottwichteln","Christbaumschmuck",
+      "Dekoration","Getränk","Gewürz","Glühwein macht mich",
+      "Gründe für kein Weihnachten","Im Winter","Im Winterurlaub",
+      "In der Silvesternacht","Kleiner als ein Teelicht",
+      "Köstlichkeit","Mit dem Nikolaus würde ich gerne",
+      "Nach der Silvesternacht","Ort für ein Weihnachtsdate",
+      "Raclettezutat","Schlechtes Weihnachtsgeschenk","Streit an Heiligabend",
+      "Süßigkeit","Teesorte","Thema für Silvesterfeier",
+      "Typisch Weihnachten","Typisch Weihnachtsmarkt","Unterm Weihnachtsbaum",
+      "Vorsatz für das neue Jahr","Weihnachtsdrink","Weihnachtsessen",
+      "Weihnachtskugelfarbe","Weihnachtslied",
+      "Weihnachtsgeschenk für Frauen","Weihnachtsgeschenk für Männer",
+      "Weihnachtssnack","Wintersportart","Winterurlaubsziel"
+    ]
+  }
+];
+
+// ══ STATE ══
+const sel       = new Set();
+const exclKats  = new Set();
+const exclTerms = new Set();
+const openKats  = new Set();
+let srchQ = '', alTarget = 'r', optSrchQ = '';
+const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+// ══ COMPUTED ══
+function aktKats() {
+  return KATEGORIEN
+    .filter(k => !exclKats.has(k.name))
+    .map(k => ({...k, begriffe: k.begriffe.filter(b => !exclTerms.has(b))}))
+    .filter(k => k.begriffe.length);
+}
+function allTerms() {
+  const r = [];
+  aktKats().forEach(k => k.begriffe.forEach(b => r.push({name:b, kat:k.name})));
+  return r;
+}
+function stats() {
+  const a = aktKats();
+  document.getElementById('stat-n').textContent = a.reduce((s,k) => s+k.begriffe.length, 0);
+  document.getElementById('stat-k').textContent = a.length;
+}
+
+// ══ ROLL ══
+function rndL() { return ABC[Math.floor(Math.random()*26)]; }
+
+function rollRnd() {
+  const pool = allTerms();
+  if (!pool.length) { toast('⚠️ Alle Kategorien ausgeblendet!'); return; }
+  const it = pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('r-term').textContent = it.name;
+  document.getElementById('r-src').textContent  = '📦 '+it.kat;
+  document.getElementById('r-letter').textContent = rndL();
+  show('res-r');
+  const d = document.getElementById('dice-ico');
+  d.classList.add('spinning'); setTimeout(()=>d.classList.remove('spinning'),420);
+}
+function rollPick() {
+  const arr = [...sel].filter(b => !exclTerms.has(b));
+  if (!arr.length) { toast('⚠️ Keine Begriffe ausgewählt!'); return; }
+  const name = arr[Math.floor(Math.random()*arr.length)];
+  const it   = allTerms().find(b => b.name===name);
+  document.getElementById('p-term').textContent = name;
+  document.getElementById('p-src').textContent  = it ? '📦 '+it.kat : '';
+  document.getElementById('p-letter').textContent = rndL();
+  show('res-p');
+}
+function show(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('visible'); void el.offsetWidth; el.classList.add('visible');
+}
+function rollL(t) {
+  const l = rndL();
+  document.getElementById('ld-'+t).textContent = l;
+  const r = document.getElementById('lr-'+t);
+  r.classList.remove('visible'); void r.offsetWidth; r.classList.add('visible');
+}
+function openAl(t) {
+  alTarget = t;
+  document.getElementById('alpha-grid').innerHTML =
+    ABC.map(l=>`<button class="alpha-btn" onclick="pickL('${l}')">${l}</button>`).join('');
+  document.getElementById('alpha-ov').classList.add('open');
+}
+function pickL(l) {
+  closeAl();
+  document.getElementById('ld-'+alTarget).textContent = l;
+  const r = document.getElementById('lr-'+alTarget);
+  r.classList.remove('visible'); void r.offsetWidth; r.classList.add('visible');
+}
+function closeAl()   { document.getElementById('alpha-ov').classList.remove('open'); }
+function closeAlOv(e){ if (e.target===document.getElementById('alpha-ov')) closeAl(); }
+function cp(id) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent)
+    .then(()=>toast('📋 Kopiert!'));
+}
+function toast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+// ══ TABS ══
+function switchTab(tab) {
+  ['r','p','o'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i) => {
+    el.classList.toggle('active', i==['r','p','o'].indexOf(tab));
+  });
+}
+
+// ══ SEARCH ══
+function onSrch() {
+  srchQ = document.getElementById('search-in').value.toLowerCase().trim();
+  buildList();
+}
+
+// ══ KAT-CHIPS ══
+function buildChips() {
+  document.getElementById('kat-chips').innerHTML = aktKats().map(k => {
+    const sc  = k.begriffe.filter(b=>sel.has(b)).length;
+    const cls = sc===k.begriffe.length&&sc>0 ? 'full' : sc>0 ? 'partial' : '';
+    const sf  = k.name.replace(/'/g,"\\'");
+    return `<button class="kat-chip ${cls}" onclick="chipToggle('${sf}')">
+      ${k.emoji} ${k.name}${sc?`<span class="kc-num">${sc}</span>`:''}
+    </button>`;
+  }).join('');
+}
+function chipToggle(n) {
+  const k = aktKats().find(k=>k.name===n); if (!k) return;
+  if (k.begriffe.every(b=>sel.has(b))) k.begriffe.forEach(b=>sel.delete(b));
+  else k.begriffe.forEach(b=>sel.add(b));
+  buildChips(); buildList();
+}
+
+// ══ AKKORDEON ══
+function buildList() {
+  const list = document.getElementById('kat-list');
+  const q = srchQ;
+  const kats = aktKats();
+  let html = '';
+  kats.forEach((k, ki) => {
+    const filt = q ? k.begriffe.filter(b=>b.toLowerCase().includes(q)||k.name.toLowerCase().includes(q)) : k.begriffe;
+    if (!filt.length) return;
+    const sc   = filt.filter(b=>sel.has(b)).length;
+    const allS = sc===filt.length&&sc>0;
+    const part = sc>0&&!allS;
+    const open = q||openKats.has(ki);
+    html += `<div class="kat-card ${sc?'has-sel':''}" id="kc-${ki}">
+      <div class="kat-head" onclick="kOpen(${ki},event)">
+        <div class="kat-cb ${allS?'on':part?'mix':''}" onclick="kCbToggle(${ki},event)">${allS?'✓':part?'–':''}</div>
+        <span class="kat-ico">${k.emoji}</span>
+        <span class="kat-lbl">${k.name}</span>
+        ${sc?`<span class="kat-num">${sc}</span>`:''}
+        <span class="kat-meta">${filt.length} Begriffe</span>
+        <span class="kat-chev ${open?'open':''}">▼</span>
+      </div>
+      <div class="kat-body ${open?'open':''}" id="kb-${ki}">
+        <div class="kat-ctrl">
+          <button class="kat-ctrl-btn" onclick="kSelAll(${ki},event)">Alle wählen</button>
+          <button class="kat-ctrl-btn" onclick="kClr(${ki},event)">Alle leeren</button>
+        </div>
+        <div class="term-grid">
+          ${filt.map(b=>{
+            const sf=b.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+            return `<button class="term-chip ${sel.has(b)?'on':''}" onclick="termToggle('${sf}')">${b}</button>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html||'<p style="color:var(--muted);text-align:center;padding:22px 0">Keine Treffer</p>';
+  document.getElementById('sel-n').textContent = sel.size;
+}
+
+function kOpen(ki,e) {
+  if (e.target.classList.contains('kat-cb')) return;
+  if (e.target.closest&&e.target.closest('.kat-body')) return;
+  if (openKats.has(ki)) openKats.delete(ki); else openKats.add(ki);
+  buildList();
+}
+function kCbToggle(ki,e) {
+  e.stopPropagation();
+  const k=aktKats()[ki]; if(!k) return;
+  const f=srchQ?k.begriffe.filter(b=>b.toLowerCase().includes(srchQ)||k.name.toLowerCase().includes(srchQ)):k.begriffe;
+  if(f.every(b=>sel.has(b))) f.forEach(b=>sel.delete(b)); else f.forEach(b=>sel.add(b));
+  buildChips();buildList();
+}
+function kSelAll(ki,e){e.stopPropagation();const k=aktKats()[ki];if(!k)return;(srchQ?k.begriffe.filter(b=>b.toLowerCase().includes(srchQ)||k.name.toLowerCase().includes(srchQ)):k.begriffe).forEach(b=>sel.add(b));buildChips();buildList();}
+function kClr(ki,e){e.stopPropagation();const k=aktKats()[ki];if(!k)return;(srchQ?k.begriffe.filter(b=>b.toLowerCase().includes(srchQ)||k.name.toLowerCase().includes(srchQ)):k.begriffe).forEach(b=>sel.delete(b));buildChips();buildList();}
+function termToggle(n){if(sel.has(n))sel.delete(n);else sel.add(n);buildChips();buildList();}
+function selAll(){aktKats().forEach(k=>{const f=srchQ?k.begriffe.filter(b=>b.toLowerCase().includes(srchQ)||k.name.toLowerCase().includes(srchQ)):k.begriffe;f.forEach(b=>sel.add(b));});buildChips();buildList();}
+function clrAll(){aktKats().forEach(k=>{const f=srchQ?k.begriffe.filter(b=>b.toLowerCase().includes(srchQ)||k.name.toLowerCase().includes(srchQ)):k.begriffe;f.forEach(b=>sel.delete(b));});buildChips();buildList();}
+
+// ══ OPTIONEN – Kategorien & Begriffe ══
+function buildExclKats() {
+  document.getElementById('excl-kats').innerHTML = KATEGORIEN.map(k=>{
+    const sf=k.name.replace(/'/g,"\\'");
+    return `<button class="excl-kat-chip ${exclKats.has(k.name)?'off':''}" onclick="toggleExclKat('${sf}')">${k.emoji} ${k.name}</button>`;
+  }).join('');
+}
+function toggleExclKat(n) {
+  if(exclKats.has(n))exclKats.delete(n);
+  else{exclKats.add(n);const k=KATEGORIEN.find(k=>k.name===n);if(k)k.begriffe.forEach(b=>sel.delete(b));}
+  buildExclKats();buildChips();buildList();stats();save();
+}
+function buildExclTermsBox() {
+  const w=document.getElementById('excl-terms-box');
+  if(!exclTerms.size){w.innerHTML='<span class="muted-text">Noch keine Begriffe ausgeblendet.</span>';return;}
+  w.innerHTML=[...exclTerms].map(b=>{
+    const sf=b.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    return `<span class="excl-term-chip">${b}<button onclick="unexcl('${sf}')">✕</button></span>`;
+  }).join('');
+}
+function unexcl(n){exclTerms.delete(n);buildExclTermsBox();buildChips();buildList();stats();onOptSrch();save();}
+function onOptSrch(){optSrchQ=document.getElementById('opts-srch').value.toLowerCase().trim();buildOptResults();}
+function buildOptResults(){
+  const r=document.getElementById('opts-results');
+  if(!optSrchQ){r.innerHTML='';return;}
+  const seen=new Set(),m=[];
+  KATEGORIEN.forEach(k=>{if(exclKats.has(k.name))return;k.begriffe.forEach(b=>{if(b.toLowerCase().includes(optSrchQ)&&!seen.has(b)){seen.add(b);m.push(b);}});});
+  r.innerHTML=m.slice(0,40).map(b=>{const sf=b.replace(/'/g,"\\'").replace(/"/g,'&quot;');return`<button class="opts-term-chip ${exclTerms.has(b)?'off':''}" onclick="toggleExclTerm('${sf}')">${b}</button>`;}).join('')||'<span style="color:var(--muted);font-size:.75rem;font-weight:600">Kein Treffer</span>';
+}
+function toggleExclTerm(n){if(exclTerms.has(n))exclTerms.delete(n);else{exclTerms.add(n);sel.delete(n);}buildExclTermsBox();buildOptResults();buildChips();buildList();stats();save();}
+
+// ══ PERSISTENZ ══
+const SK = 'slvp5';
+function save() {
+  try { localStorage.setItem(SK, JSON.stringify({th:curTheme,ly:curLayout,ek:[...exclKats],et:[...exclTerms]})); } catch(e){}
+}
+function loadSaved() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SK)||'{}');
+    if (d.ek) d.ek.forEach(k=>exclKats.add(k));
+    if (d.et) d.et.forEach(t=>exclTerms.add(t));
+    setTheme(d.th||'dark');
+    setLayout(d.ly||'cards');
+  } catch(e) {
+    setTheme('dark');
+    setLayout('cards');
+  }
+}
+
+// ══ INIT ══
+loadSaved();
+stats();
+buildChips();
+buildList();
+buildExclKats();
+buildExclTermsBox();
+</script>
+
+</body>
+</html>
